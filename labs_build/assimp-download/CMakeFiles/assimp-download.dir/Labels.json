@@ -1,0 +1,59 @@
+
+{
+	"sources" : 
+	[
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/assimp-download"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeLists.txt"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/c42cec6dffc6dbb783baf7a5f5a34a72/assimp-download.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/e19c636ebdbfbb7e85bb197103a2e061/assimp-download-complete.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-install.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-mkdir.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-download.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-update.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-patch.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-configure.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-build.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : [ "assimp-download" ],
+		"name" : "assimp-download"
+	}
+}

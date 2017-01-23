@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_allegro.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_directx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_directx10.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_directx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_directxm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_internal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_opengl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_sdlsurface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_states.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\src\ilut_x11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\include\ilut_allegro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\include\ilut_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\include\ilut_opengl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\include\ilut_states.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\include\IL\devil_internal_exports.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\include\IL\ilut.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\msvc\resources\IL Logo.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\msvc\ilut.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="C:\Users\40204497\Desktop\set08116\labs_build\devil-src\DevIL\src-ILUT\msvc\ILUT.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8BCA308F-D36A-3A7D-86E4-F746847273D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{FBF56DF6-C99A-3511-BD9A-CA14D7BF5321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{0BF71B4F-9E8E-3476-B158-8883D67E4C2B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

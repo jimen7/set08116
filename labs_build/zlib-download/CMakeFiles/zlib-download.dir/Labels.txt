@@ -1,0 +1,15 @@
+# Target labels
+ zlib-download
+# Source files and their labels
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/zlib-download
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeLists.txt
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/28e34618fb88c3069dcf191920db1b79/zlib-download.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/01179f1a31456b439c6ec0e5a54c818d/zlib-download-complete.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/33c7f7ed8aa6fdd23180a81dd19aaff2/zlib-download-install.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/33c7f7ed8aa6fdd23180a81dd19aaff2/zlib-download-mkdir.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/33c7f7ed8aa6fdd23180a81dd19aaff2/zlib-download-download.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/33c7f7ed8aa6fdd23180a81dd19aaff2/zlib-download-update.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/33c7f7ed8aa6fdd23180a81dd19aaff2/zlib-download-patch.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/33c7f7ed8aa6fdd23180a81dd19aaff2/zlib-download-configure.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/33c7f7ed8aa6fdd23180a81dd19aaff2/zlib-download-build.rule
+C:/Users/40204497/Desktop/set08116/labs_build/zlib-download/CMakeFiles/33c7f7ed8aa6fdd23180a81dd19aaff2/zlib-download-test.rule

@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\cfe1bdffac11e8910d01f3de0a167ced\libjpeg-download-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\cfe1bdffac11e8910d01f3de0a167ced\libjpeg-download-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\cfe1bdffac11e8910d01f3de0a167ced\libjpeg-download-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\cfe1bdffac11e8910d01f3de0a167ced\libjpeg-download-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\cfe1bdffac11e8910d01f3de0a167ced\libjpeg-download-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\cfe1bdffac11e8910d01f3de0a167ced\libjpeg-download-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\cfe1bdffac11e8910d01f3de0a167ced\libjpeg-download-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\cfe1bdffac11e8910d01f3de0a167ced\libjpeg-download-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\f1f47871cca46e9d6cde055596b688c9\libjpeg-download-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\22781980219df57a8a933ab7faa9530b\libjpeg-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\40204497\Desktop\set08116\labs_build\libjpeg-download\CMakeFiles\libjpeg-download" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{8777A588-28A1-3C34-8CA3-CE3A58A21D84}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

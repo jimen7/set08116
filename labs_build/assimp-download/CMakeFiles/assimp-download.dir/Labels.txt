@@ -1,0 +1,15 @@
+# Target labels
+ assimp-download
+# Source files and their labels
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/assimp-download
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeLists.txt
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/c42cec6dffc6dbb783baf7a5f5a34a72/assimp-download.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/e19c636ebdbfbb7e85bb197103a2e061/assimp-download-complete.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-install.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-mkdir.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-download.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-update.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-patch.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-configure.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-build.rule
+C:/Users/40204497/Desktop/set08116/labs_build/assimp-download/CMakeFiles/9fab2331ae5102f69a96fe477d19f20a/assimp-download-test.rule

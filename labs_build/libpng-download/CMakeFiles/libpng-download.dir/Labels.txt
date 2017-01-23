@@ -1,0 +1,15 @@
+# Target labels
+ libpng-download
+# Source files and their labels
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/libpng-download
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeLists.txt
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/2d9f0ef08a7c87279088f4bd10aa7c66/libpng-download.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/a0e7af30688590678e4eb69fd7bde814/libpng-download-complete.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-install.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-mkdir.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-download.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-update.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-patch.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-configure.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-build.rule
+C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-test.rule

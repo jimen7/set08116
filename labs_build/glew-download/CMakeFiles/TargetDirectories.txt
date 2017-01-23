@@ -1,0 +1,3 @@
+C:/Users/40204497/Desktop/set08116/labs_build/glew-download/CMakeFiles/glew-download.dir
+C:/Users/40204497/Desktop/set08116/labs_build/glew-download/CMakeFiles/ALL_BUILD.dir
+C:/Users/40204497/Desktop/set08116/labs_build/glew-download/CMakeFiles/ZERO_CHECK.dir

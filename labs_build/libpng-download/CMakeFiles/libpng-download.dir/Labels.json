@@ -1,0 +1,59 @@
+
+{
+	"sources" : 
+	[
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/libpng-download"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeLists.txt"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/2d9f0ef08a7c87279088f4bd10aa7c66/libpng-download.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/a0e7af30688590678e4eb69fd7bde814/libpng-download-complete.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-install.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-mkdir.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-download.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-update.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-patch.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-configure.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-build.rule"
+		},
+		
+		{
+			"file" : "C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/39693814c49215e85b171848a637bb34/libpng-download-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : [ "libpng-download" ],
+		"name" : "libpng-download"
+	}
+}
