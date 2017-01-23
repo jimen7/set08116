@@ -69,32 +69,41 @@ bool update(float delta_time) {
   // Cursor - rotation
   // O decrease scale, P increase scale
 
+	//MOVEMENT
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP)) {
+		pos += vec3(0.0f, 0.0f, -5.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN)) {
+		pos += vec3(0.0f, 0.0f, 5.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT)) {
+		pos += vec3(-5.0f, 0.0f, 0.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT)) {
+		pos += vec3(5.0f, 0.0f, 0.0f) * delta_time;
+	}
 
+	//ROTATION
+	if (glfwGetKey(renderer::get_window(), GLFW_CURSOR)) {
+		theta -= pi<float>() * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_CURSOR)) {
+		theta += pi<float>() * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_CURSOR)) {
+		rho -= pi<float>() * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_CURSOR)) {
+		rho += pi<float>() * delta_time;
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	//SCALING
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_P)) {
+		s = s * 2 * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_0)) {
+		s = s / 2 * delta_time;
+	}
 
 
 
@@ -107,10 +116,13 @@ bool update(float delta_time) {
 bool render() {
   // Bind effect
   renderer::bind(eff);
-  mat4 T, R, S, M;
+ // mat4 T, R, S, M;
   // *********************************
   // Create transformation matrix
-
+  mat4 T = translate(mat4(1.0f), pos);
+  mat4 R = rotate(mat4(1.0f), theta, vec3(0.0f, 0.0f, 1.0f));
+  mat4 S = scale(mat4(1.0f), vec3(s));
+  mat4 M = T*(R*S);
 
 
 
