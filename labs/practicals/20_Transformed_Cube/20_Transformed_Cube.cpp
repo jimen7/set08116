@@ -84,25 +84,25 @@ bool update(float delta_time) {
 	}
 
 	//ROTATION
-	if (glfwGetKey(renderer::get_window(), GLFW_CURSOR)) {
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_S)) {
 		theta -= pi<float>() * delta_time;
 	}
-	if (glfwGetKey(renderer::get_window(), GLFW_CURSOR)) {
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_W)) {
 		theta += pi<float>() * delta_time;
 	}
-	if (glfwGetKey(renderer::get_window(), GLFW_CURSOR)) {
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_A)) {
 		rho -= pi<float>() * delta_time;
 	}
-	if (glfwGetKey(renderer::get_window(), GLFW_CURSOR)) {
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_D)) {
 		rho += pi<float>() * delta_time;
 	}
 
 	//SCALING
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_P)) {
-		s = s * 2 * delta_time;
+		s = s * 1.25 ;
 	}
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_0)) {
-		s = s / 2 * delta_time;
+		s = s / 1.25 ;
 	}
 
 
@@ -128,6 +128,7 @@ bool render() {
 
   // *********************************
   // Create MVP matrix
+ // mat4 M = eulerAngleXZ(theta, rho);
   auto V = cam.get_view();
   auto P = cam.get_projection();
   auto MVP = P * V * M;

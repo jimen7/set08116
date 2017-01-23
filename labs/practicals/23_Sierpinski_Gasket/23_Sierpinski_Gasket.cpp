@@ -20,15 +20,21 @@ void triangle(const vector<vec3> &points, vector<vec3> &positions, vector<vec4> 
 
 void divide_triangle(const vector<vec3> &points, unsigned int count, vector<vec3> &positions, vector<vec4> &colours) {
   // *********************************
+	if (points.size() == 3) {
+		triangle(points, positions, colours);
+	}
+
   // IF we have more divisions to do?
+	if (points.size() == 3) {
+		// Calculate new vertices to work on
+		//vec3 u = (positions[1] + positions[2]) / 2;
+		//vec3 g = positions
 
-    // Calculate new vertices to work on
-
-    // Divide new triangles
+		// Divide new triangles
 
 
 
-
+	}
 
 
 
