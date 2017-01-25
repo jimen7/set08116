@@ -15,9 +15,10 @@ const int subdivisions = 5;
 
 void divide_triangle(const vector<vec3> &points, int divisions, vector<vec3> &positions, vector<vec4> &colours) {
   // IF we have more divisions to do?
-  if (divisions > 0) {
+  if (divisions > 0 && points.size()==3) {
     // *********************************
     // Calculate new vertices to work on (Normalize each element!)
+	  positions = &positions + &points;
 
 
     // Divide new triangles

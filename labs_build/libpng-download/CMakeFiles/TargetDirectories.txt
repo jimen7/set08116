@@ -1,3 +1,0 @@
-C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/libpng-download.dir
-C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/ALL_BUILD.dir
-C:/Users/40204497/Desktop/set08116/labs_build/libpng-download/CMakeFiles/ZERO_CHECK.dir

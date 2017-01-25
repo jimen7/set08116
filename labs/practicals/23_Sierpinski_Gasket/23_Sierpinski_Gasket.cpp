@@ -8,6 +8,7 @@ using namespace glm;
 geometry geom;
 effect eff;
 target_camera cam;
+vec3 u;
 
 // Helper method - adds a triangle to geometry
 void triangle(const vector<vec3> &points, vector<vec3> &positions, vector<vec4> &colours) {
@@ -27,9 +28,8 @@ void divide_triangle(const vector<vec3> &points, unsigned int count, vector<vec3
   // IF we have more divisions to do?
 	if (points.size() == 3) {
 		// Calculate new vertices to work on
-		//vec3 u = (positions[1] + positions[2]) / 2;
-		//vec3 g = positions
-
+		vec3 u = (positions[0] + positions.[1]) / 2;
+	//	positions.
 		// Divide new triangles
 
 
