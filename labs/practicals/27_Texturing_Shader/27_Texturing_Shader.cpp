@@ -25,7 +25,7 @@ bool load_content() {
   geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
   // *********************************
   // Add texture coordinate buffer to geometry
-
+  geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
   // *********************************
 
   // Create mesh object
@@ -38,7 +38,7 @@ bool load_content() {
   // Build effect
 
   // Load texture "textures/sign.jpg"
-
+  tex = texture("textures/sign.jpg");
   // *********************************
 
   // Set camera properties

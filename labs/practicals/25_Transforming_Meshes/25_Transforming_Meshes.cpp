@@ -64,7 +64,7 @@ bool update(float delta_time) {
   // *********************************
   //Scale
   if (glfwGetKey(renderer::get_window(), '0')) {
-	  m.get_transform().scale *= (mat4(1.0f), 1.25);
+	  m.get_transform().scale *=  1.25f;
   }
   if (glfwGetKey(renderer::get_window(), 'P')) {
 	  m.get_transform().scale /= (mat4(1.0f), 1.25);
