@@ -42,18 +42,14 @@ bool load_content() {
   // *********************************
   // Load textures sign.jpg
   // 0 - no mipmaps, no anisotropic
-  texs[0] = texture("textures/checker.png", false, false);
+  texs[0] = texture("textures/sign.jpg", false, false);
   // 1 - no mipmaps, anisotropic
-  texs[1] = texture("textures/checker.png", false, true);
+  texs[1] = texture("textures/sign.jpg", false, true);
   // 2 - mipmaps, anisotropic
-  texs[2] = texture("textures/checker.png", true, true);
+  texs[2] = texture("textures/sign.jpg", true, true);
   // 3 - mipmaps, no anisotropic
-  texs[2] = texture("textures/checker.png", true, false);
+  texs[3] = texture("textures/sign.jpg", true, false);
   // ******************************
-
-
-
-
   // *********************************
   // Set camera properties
   cam.set_position(vec3(10.0f, 2.0f, 200.0f));

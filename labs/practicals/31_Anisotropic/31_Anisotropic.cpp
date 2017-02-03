@@ -20,7 +20,7 @@ bool load_content() {
   vector<vec3> positions{vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f),
                          vec3(1.0f, 1.0f, 0.0f)};
   // Texture coordinates
-  vector<vec2> tex_coords{vec2(0.0f, 0.0f), vec2(10.0f, 0.0f), vec2(0.0f, 400.0f), vec2(10.0f, 400.0f)};
+  vector<vec2> tex_coords{vec2(0.0f, 0.0f), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f)};
   // Add to the geometry
   geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
   geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
@@ -34,8 +34,8 @@ bool load_content() {
   }
 
   // Load in texture shaders, !Note that are pulling in shader file from previous project!
-  eff.add_shader("31_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
-  eff.add_shader("31_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
+  eff.add_shader("27_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
 
   // Build effect
   eff.build();
@@ -47,10 +47,10 @@ bool load_content() {
   // 2 - mipmaps, no anisotropic
   // 3 - mipmaps, anisotropic
   // ******************************
-  texs[0] = texture("textures/checker.png", false, false);
-  texs[1] = texture("textures/checker.png", false, true);
-  texs[2] = texture("textures/checker.png", true, true);
-  texs[3] = texture("textures/checker.png", true, true);
+  texs[0] = texture("textures/sign.jpg", false, false);
+  texs[1] = texture("textures/sign.jpg", false, true);
+  texs[2] = texture("textures/sign.jpg", true, true);
+  texs[3] = texture("textures/sign.jpg", true, true);
 
   // Set camera properties
   cam.set_position(vec3(10.0f, 2.0f, 200.0f));

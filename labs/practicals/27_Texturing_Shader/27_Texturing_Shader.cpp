@@ -62,7 +62,7 @@ bool render() {
   // Create MVP matrix
   auto M = m.get_transform().get_transform_matrix();
   auto V = cam.get_view();
-  auto P = cam.get_projection();
+  auto P = cam.get_projection(); 
   auto MVP = P * V * M;
   // Set MVP matrix uniform
   glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform

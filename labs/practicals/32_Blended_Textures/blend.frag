@@ -13,7 +13,7 @@ layout(location = 0) out vec4 colour;
 void main() {
   // *********************************
   // Sample the two main textures
-
+  texs[1]
 
   // Sample the blend texture
 
