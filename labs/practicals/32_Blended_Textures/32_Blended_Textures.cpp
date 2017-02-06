@@ -34,7 +34,7 @@ bool load_content() {
 
   // Load in blend shader
   eff.add_shader("32_Blended_Textures/blend.vert", GL_VERTEX_SHADER);
-  eff.add_shader("32_Blended_Textures/blend.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("32_Blended_Textures/blend.frag", GL_FRAGMENT_SHADER); 
 
   // Build effect
   eff.build();
@@ -43,22 +43,21 @@ bool load_content() {
   texs[0] = texture("textures/grass.jpg");
   texs[1] = texture("textures/stonygrass.jpg");
   // Load blend map, try both blend_map1.png and blend_map2.jpg
-  blend_map = texture("textures/blend_map1.png");
-  blend_map = texture("textures/blend_map2.png");
+  blend_map = texture("textures/blend_map2.jpg");
   // Set camera properties
   cam.set_position(vec3(0.0f, 0.0f, 30.0f));
   cam.set_target(vec3(0.0f, 0.0f, 0.0f));
   auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-  cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+  cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);  
 
   return true;
 }
 
 bool update(float delta_time) {
-  // Update camera
+  // Update camera 
   cam.update(delta_time);
   return true;
-}
+}   
 
 bool render() {
   // Bind effect
@@ -76,9 +75,9 @@ bool render() {
 
   // *********************************
   // Bind the three textures - use different index for each
-
-
-
+  renderer::bind(texs[0], 0);
+  renderer::bind(texs[1], 1);
+  renderer::bind(blend_map, 2); 
   // *********************************
 
   // Set the uniform values for textures
@@ -87,7 +86,7 @@ bool render() {
   glUniform1i(eff.get_uniform_location("blend"), 2);
 
   // Render the mesh
-  renderer::render(m);
+  renderer::render(m); 
 
   return true;
 }

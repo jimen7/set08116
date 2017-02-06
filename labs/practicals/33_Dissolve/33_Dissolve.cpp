@@ -23,8 +23,8 @@ bool load_content() {
   m.get_transform().scale = vec3(10.0f);
 
   // Load in dissolve shader
-  eff.add_shader("36_Dissolve/dissolve.vert", GL_VERTEX_SHADER);
-  eff.add_shader("36_Dissolve/dissolve.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("33_Dissolve/dissolve.vert", GL_VERTEX_SHADER);
+  eff.add_shader("33_Dissolve/dissolve.frag", GL_FRAGMENT_SHADER);
 
   // Build effect
   eff.build();
@@ -58,7 +58,7 @@ bool render() {
   // Bind effect
   renderer::bind(eff);
 
-  // Create MVP matrix
+  // Create MVP matrix 
   auto M = m.get_transform().get_transform_matrix();
   auto V = cam.get_view();
   auto P = cam.get_projection();
@@ -72,12 +72,13 @@ bool render() {
 
   // *********************************
   // Set the dissolve_factor uniform value
-
+  glUniform1i(eff.get_uniform_location("dissolve_factor"), 0);
   // Bind the two textures - use different index for each
-
-
+  renderer::bind(tex, 0);
+  renderer::bind(dissolve, 1);
   // Set the uniform values for textures - use correct index
-
+  glUniform1i(eff.get_uniform_location("tex"), 0);
+  glUniform1i(eff.get_uniform_location("dissolve"), 1);
 
   // *********************************
 
