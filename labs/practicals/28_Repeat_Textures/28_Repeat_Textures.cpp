@@ -14,10 +14,9 @@ texture tex;
 bool load_content() {
   // Construct geometry object
   geometry geom;
- // geom.set_type(GL_QUADS);
   // Create triangle data
   // Positions
-  vector<vec3> positions{vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f) };
+  vector<vec3> positions{ vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f) };
   // *********************************
   // Define texture coordinates for triangle
   vector<vec2> tex_coords{ vec2(2.0f, 2.0f), vec2(-1.0f, 2.0f), vec2(-1.0f, -1.0f), vec2(2.0f, -1.0f) };
@@ -78,7 +77,7 @@ bool render() {
   // Set the texture value for the shader here
   glUniform1i(eff.get_uniform_location("tex"), 0);
   // *********************************
-
+  glDisable(GL_CULL_FACE);
   // Render the mesh
   renderer::render(m);
 
