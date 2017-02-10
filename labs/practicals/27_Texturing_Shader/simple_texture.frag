@@ -12,6 +12,7 @@ void main() {
   // *********************************
   // Set out colour to sampled texture colour
   //out_colour = tex;
-  out_colour = texture(tex , tex_coord) ;
+  out_colour = texture(tex , tex_coord) ;
+
   // *********************************
 }
