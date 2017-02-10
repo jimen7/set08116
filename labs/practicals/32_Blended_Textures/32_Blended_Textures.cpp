@@ -14,44 +14,46 @@ array<texture, 2> texs;
 texture blend_map;
 
 bool load_content() {
-	// Construct geometry object
-	geometry geom;
-	geom.set_type(GL_TRIANGLE_STRIP);
 
-	// Positions
-	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f),
-		vec3(1.0f, 1.0f, 0.0f) };
-	// Texture coordinates
-	vector<vec2> tex_coords{ vec2(0.0f, 0.0f), vec2(2.0f, 0.0f), vec2(0.0f, 2.0f), vec2(2.0f, 2.0f) };
-	// Add to the geometry
-	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
-	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+  // Construct geometry object
+  geometry geom;
+  geom.set_type(GL_TRIANGLE_STRIP);
 
-	// Create mesh object
-	m = mesh(geom);
-	// Scale geometry
-	m.get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
+  // Positions
+  vector<vec3> positions{vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f),
+                         vec3(1.0f, 1.0f, 0.0f)};
+  // Texture coordinates
+  vector<vec2> tex_coords{vec2(0.0f, 0.0f), vec2(2.0f, 0.0f), vec2(0.0f, 2.0f), vec2(2.0f, 2.0f)};
+  // Add to the geometry
+  geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+  geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
 
-	// Load in blend shader
-	eff.add_shader("32_Blended_Textures/blend.vert", GL_VERTEX_SHADER);
-	eff.add_shader("32_Blended_Textures/blend.frag", GL_FRAGMENT_SHADER);
+  // Create mesh object
+  m = mesh(geom);
+  // Scale geometry
+  m.get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
 
-	// Build effect
-	eff.build();
+  // Load in blend shader
+  eff.add_shader("32_Blended_Textures/blend.vert", GL_VERTEX_SHADER);
+  eff.add_shader("32_Blended_Textures/blend.frag", GL_FRAGMENT_SHADER);
 
-	// Load main two textures
-	texs[0] = texture("textures/grass.jpg");
-	texs[1] = texture("textures/stonygrass.jpg");
-	// Load blend map, try both blend_map1.png and blend_map2.jpg
-	blend_map = texture("textures/blend_map2.jpg");
+  // Build effect
+  eff.build();
 
-	// Set camera properties
-	cam.set_position(vec3(0.0f, 0.0f, 30.0f));
-	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
-	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+  // Load main two textures
+  texs[0] = texture("textures/grass.jpg");
+  texs[1] = texture("textures/stonygrass.jpg");
+  // Load blend map, try both blend_map1.png and blend_map2.jpg
+  blend_map = texture("textures/blend_map1.png");
 
-	return true;
+  // Set camera properties
+  cam.set_position(vec3(0.0f, 0.0f, 30.0f));
+  cam.set_target(vec3(0.0f, 0.0f, 0.0f));
+  auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
+  cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
+  return true;
+
 }
 
 bool update(float delta_time) {
