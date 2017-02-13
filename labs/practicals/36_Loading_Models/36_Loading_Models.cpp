@@ -37,7 +37,7 @@ bool update(float delta_time) {
   cam.update(delta_time);
   return true;
 }
-
+ 
 bool render() {
   // Bind effect
   renderer::bind(eff);
