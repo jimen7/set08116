@@ -70,7 +70,7 @@ bool update(float delta_time) {
   // Update the camera
 
   // If mouse button pressed get ray and check for intersection
-
+  if (glfwGetKey(renderer::get_window(), GLFW_MOUSE_BUTTON_LEFT))
     // Get the mouse position
 
 

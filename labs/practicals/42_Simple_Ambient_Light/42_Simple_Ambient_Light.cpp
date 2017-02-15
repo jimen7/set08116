@@ -44,7 +44,7 @@ bool load_content() {
   eff.add_shader("42_Simple_Ambient_Light/simple_ambient.vert", GL_VERTEX_SHADER);
   eff.add_shader("42_Simple_Ambient_Light/simple_ambient.frag", GL_FRAGMENT_SHADER);
   // Build effect
-  eff.build();
+  eff.build(); 
 
   // Set camera properties
   cam.set_position(vec3(50.0f, 10.0f, 50.0f));
@@ -88,9 +88,9 @@ bool render() {
 
     // *********************************
     // Set material colour - all objects red
-
+	glUniform4fv(eff.get_uniform_location("material_colour"), 1, value_ptr(vec4(1.0f,0.0f,0.0f,1.0f)));
     // Set ambient intensity - (0.3, 0.3, 0.3, 1.0)
-
+	glUniform4fv(eff.get_uniform_location("ambient_intensity"), 1, value_ptr(vec4(0.3f, 0.3f, 0.3f, 1.0f)));
     // *********************************
     // Render mesh
     renderer::render(m);
