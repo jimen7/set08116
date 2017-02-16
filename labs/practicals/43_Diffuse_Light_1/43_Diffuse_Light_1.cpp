@@ -42,7 +42,7 @@ bool load_content() {
 
   // Load in shaders
   eff.add_shader("43_Diffuse_Light_1/simple_diffuse.vert", GL_VERTEX_SHADER);
-  eff.add_shader("43_Diffuse_Light_1/simple_diffuse.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("43_Diffuse_Light_1/simple_diffuse.frag", GL_FRAGMENT_SHADER); 
   // Build effect
   eff.build();
 
@@ -91,11 +91,11 @@ bool render() {
 
     // *********************************
     // Set material colour- all objects red
-
+	glUniform4fv(eff.get_uniform_location("material_colour"), 1, value_ptr(vec4(1.0f, 0.0f, 0.0f, 1.0f)));
     // Set light colour- (1.0, 1.0, 1.0, 1.0)
-
+	glUniform4fv(eff.get_uniform_location("light_colour"), 1, value_ptr(vec4(1.0f, 1.0f, 1.0f, 1.0f)));
     // Set light direction - (1.0, 1.0, -1.0)
-
+	glUniform4fv(eff.get_uniform_location("light_dir"), 1, value_ptr(vec3(1.0f, 1.0f, -1.0f)));
     // Render mesh
 
     // *********************************

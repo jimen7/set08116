@@ -68,18 +68,23 @@ bool update(float delta_time) {
 
   // *********************************
   // Update the camera
-
+  cam.update(delta_time);
+  static bool clicked;
+ if (glfwGetMouseButton(renderer::get_window(), 0) == GLFW_RELEASE)
+	  clicked = false;
   // If mouse button pressed get ray and check for intersection
-  if (glfwGetKey(renderer::get_window(), GLFW_MOUSE_BUTTON_LEFT))
+ if (!clicked && glfwGetMouseButton(renderer::get_window(), 0) == GLFW_PRESS)
+ {
+	 clicked = true;
     // Get the mouse position
-
-
-
+	 double cursor_x = 0.0;
+	 double cursor_y = 0.0;
+	 glfwGetCursorPos(renderer::get_window(), &cursor_x, &cursor_y);
     // Origin and direction of the ray
-
-
+	 vec3 direction;
+	 vec3 origin;
     // Convert mouse position to ray
-
+	 screen_pos_to_world_ray(cursor_x, cursor_y, renderer::get_screen_width(), renderer::get_screen_height(), cam.get_view(), cam.get_projection(), origin, direction);
 
     // *********************************
     // Check all the mehes for intersection
