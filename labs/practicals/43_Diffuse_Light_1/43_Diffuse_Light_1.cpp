@@ -79,10 +79,10 @@ bool render() {
   // Render meshes
   for (auto &e : meshes) {
     auto m = e.second;
-    // Bind effect
+    // Bind effect 
     renderer::bind(eff);
     // Create MVP matrix
-    auto M = m.get_transform().get_transform_matrix();
+	auto M = m.get_transform().get_transform_matrix();
     auto V = cam.get_view();
     auto P = cam.get_projection();
     auto MVP = P * V * M;
@@ -95,9 +95,9 @@ bool render() {
     // Set light colour- (1.0, 1.0, 1.0, 1.0)
 	glUniform4fv(eff.get_uniform_location("light_colour"), 1, value_ptr(vec4(1.0f, 1.0f, 1.0f, 1.0f)));
     // Set light direction - (1.0, 1.0, -1.0)
-	glUniform4fv(eff.get_uniform_location("light_dir"), 1, value_ptr(vec3(1.0f, 1.0f, -1.0f)));
+	glUniform3fv(eff.get_uniform_location("light_dir"), 1, value_ptr(vec3(1.0f, 1.0f, -1.0f)));
     // Render mesh
-
+	renderer::render(m);
     // *********************************
   }
 
