@@ -73,7 +73,7 @@ bool load_content() {
   meshes["torus"].set_material(mat);
 
 
-
+    
 
   // *********************************
 
@@ -81,16 +81,16 @@ bool load_content() {
   tex = texture("textures/checker.png");
   // *********************************
   // Set lighting values, Position (-25, 10, -10)
-
+  light.set_position(vec3(-25.0f,10.0f,-10.0f));
   // Light colour white
-
+  light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f)); 
   // Set range to 20
-
+  light.set_range(20.0f); 
   // Load in shaders
-
-
+  eff.add_shader("49_Point_Light/point.vert", GL_VERTEX_SHADER);   
+  eff.add_shader("49_Point_Light/point.frag", GL_FRAGMENT_SHADER);  
   // Build effect
-
+  eff.build();
   // *********************************
 
   // Set camera properties
@@ -104,33 +104,41 @@ bool update(float delta_time) {
   // Range of the point light
   static float range = 20.0f;
   // *********************************
-
-
-
-
-
-
-
-
-
-
-
-
+  //Move Camera
+	  if (glfwGetKey(renderer::get_window(), '1')) {
+		  cam.set_position(vec3(50, 10, 50));
+	  }
+	  if (glfwGetKey(renderer::get_window(), '2')) {
+		  cam.set_position(vec3(-50, 10, 50));
+	  }
+	  if (glfwGetKey(renderer::get_window(), '3')) {
+		  cam.set_position(vec3(-50, 10, -50));
+	  }
+	  if (glfwGetKey(renderer::get_window(), '4')) {
+		  cam.set_position(vec3(50, 10, -50));
+	  }
   // WSAD to move point light
-
-
-
-
-
-
-
-
-
-
+	  if (glfwGetKey(renderer::get_window(), 'W')) {
+		  light.set_position(light.get_position() + vec3(10.0f,0.0f,0.0f)*delta_time);
+	  }
+	  if (glfwGetKey(renderer::get_window(), 'S')) {
+		  light.set_position(light.get_position() - vec3(10.0f, 0.0f, 0.0f)*delta_time);
+	  }
+	  if (glfwGetKey(renderer::get_window(), 'A')) {
+		  light.set_position(light.get_position() - vec3(0.0f, 10.0f, 0.0f)*delta_time);
+	  }
+	  if (glfwGetKey(renderer::get_window(), 'D')) {
+		  light.set_position(light.get_position() + vec3(0.0f, 10.0f, 0.0f)*delta_time);
+	  }
 
 
   // O and P to change range
-
+	  if (glfwGetKey(renderer::get_window(), 'O')) {
+		  range += 200.f*delta_time;
+	  }
+	  if (glfwGetKey(renderer::get_window(), 'P')) {
+		  range -= 200.f*delta_time;
+	  }
 
 
 
@@ -142,7 +150,7 @@ bool update(float delta_time) {
   light.set_range(range);
 
   // Rotate the sphere
-  meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
+  meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time); 
 
   cam.update(delta_time);
 
@@ -168,21 +176,21 @@ bool render() {
 
     // *********************************
     // Set M matrix uniform
-
+	glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
     // Set N matrix uniform - remember - 3x3 matrix
-
+	glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(mat3(m.get_transform().get_normal_matrix())));
     // Bind material
-
+	renderer::bind(m.get_material(), "mat");
     // Bind light
-
+	renderer::bind(light, "point");
     // Bind texture
-
+	renderer::bind(tex, 0);
     // Set tex uniform
-
+	glUniform1i(eff.get_uniform_location("tex"), 0);
     // Set eye position- Get this from active camera
-
+	glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
     // Render mesh
-
+	renderer::render(m);
     // *********************************
   }
 
