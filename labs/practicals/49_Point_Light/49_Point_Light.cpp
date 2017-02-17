@@ -41,42 +41,36 @@ bool load_content() {
   meshes["torus"].get_transform().translate(vec3(-25.0f, 10.0f, -25.0f));
   meshes["torus"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 
+  material mat;
   // *********************************
   // Set materials
   // - all emissive is black
   // - all specular is white
   // - all shininess is 25
+  mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  mat.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  mat.set_shininess(25.0f);
   // Red box
-
-
-
-
+  mat.set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+  meshes["box"].set_material(mat);
   // Green tetra
-
-
-
-
+  mat.set_diffuse(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+  meshes["tetra"].set_material(mat);
   // Blue pyramid
-
-
-
-
+  mat.set_diffuse(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+  meshes["box"].set_material(mat);
   // Yellow disk
-
-
-
-
+  mat.set_diffuse(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+  meshes["disk"].set_material(mat);
   // Magenta cylinder
-
-
-
-
+  mat.set_diffuse(vec4(1.0f, 0.0f, 1.0f, 1.0f));
+  meshes["cylinder"].set_material(mat);
   // Cyan sphere
-
-
-
-
+  mat.set_diffuse(vec4(0.0f, 1.0f, 1.0f, 1.0f));
+  meshes["sphere"].set_material(mat);
   // White torus
+  mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  meshes["torus"].set_material(mat);
 
 
 

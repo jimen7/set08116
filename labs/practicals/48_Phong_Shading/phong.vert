@@ -23,11 +23,11 @@ layout(location = 2) out vec2 tex_coord_out;
 
 void main() {
   // Set position
-  gl_Position = MVP * vec4(position, 1);
+  gl_Position = MVP * vec4(position, 1.0f);
   // *********************************
   // Output other values to fragment shader
-
-
-
+  vertex_position = vec3(M * vec4(position, 1.0f));
+  transformed_normal = N * normal;
+  tex_coord_out = tex_coord_in;
   // *********************************
 }
