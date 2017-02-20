@@ -20,14 +20,14 @@ bool load_content() {
   // Create scene
   meshes["box"] = mesh(geometry_builder::create_box());
   meshes["tetra"] = mesh(geometry_builder::create_tetrahedron());
-  meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
-  meshes["disk"] = mesh(geometry_builder::create_disk(20));
-  meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20));
+  meshes["pyramid"] = mesh(geometry_builder::create_pyramid());  
+  meshes["disk"] = mesh(geometry_builder::create_disk(20)); 
+  meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20));  
   meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
-  meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
-
+  meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));  
+   
   // Transform objects
-  meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
+  meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f); 
   meshes["box"].get_transform().translate(vec3(-10.0f, 2.5f, -30.0f));
   meshes["tetra"].get_transform().scale = vec3(4.0f, 4.0f, 4.0f);
   meshes["tetra"].get_transform().translate(vec3(-30.0f, 10.0f, -10.0f));
@@ -69,9 +69,9 @@ bool load_content() {
   meshes["cylinder"].set_material(mat);
   // Cyan sphere
   mat.set_diffuse(vec4(0.0f, 1.0f, 1.0f, 1.0f));
-  meshes["sphere"].set_material(mat);
+  meshes["sphere"].set_material(mat); 
   // White torus
-  mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f)); 
   meshes["torus"].set_material(mat);
 
 
@@ -169,7 +169,7 @@ bool load_content() {
   spots[4].set_power(1.0f);
 
 
-
+   
 
   // *********************************
 

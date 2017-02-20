@@ -89,16 +89,16 @@ void main() {
   vec4 sample_texture = texture(tex, tex_coord_out);
 
   // Calculate directional light colour
-  colour += calculate_direction(light, mat, transformed_normal, view_dir, texture_sample);
+  colour += calculate_direction(light, mat, transformed_normal, view_dir, sample_texture);
 
   // Sum point lights
   for (int i = 0; i < 4; ++i) {
-	colour += calculate_point(points[i], mat, vertex_position, transformed_normal, view_dir, texture_sample);
+	colour += calculate_point(points[i], mat, vertex_position, transformed_normal, view_dir, sample_texture);
   }
 
   // Sum spot lights
   for (int i = 0; i < 5; ++i) {
-	colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, texture_sample);
+	colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, sample_texture);
   }
 
 
