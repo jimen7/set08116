@@ -71,7 +71,7 @@ bool load_content() {
   // White torus
   mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   meshes["torus"].set_material(mat);
-
+  
 
     
 
