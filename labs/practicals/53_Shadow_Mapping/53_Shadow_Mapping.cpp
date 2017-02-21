@@ -21,7 +21,7 @@ bool load_content() {
   // Create "teapot" mesh by loading in models/teapot.obj
 	meshes["teapot"] = mesh(geometry("models/teapot.obj"));
   // Need to rotate the teapot on x by negative pi/2
-	meshes["teapot"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
+	meshes["teapot"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
   // Scale the teapot - (0.1, 0.1, 0.1)
 	meshes["teapot"].get_transform().scale = vec3(0.1f, 0.1f, 0.1f);
   // ***********************

@@ -12,7 +12,9 @@ free_camera cam;
 double cursor_x;
 double cursor_y;
 map<string, texture> tex;
-point_light light;
+point_light light;	
+float velocity;
+bool button = true;
 
 
 bool initialise() {
@@ -27,15 +29,23 @@ bool initialise() {
 
 bool load_content() {
   // Create Sphere
-	//meshes["plane"] = mesh(geometry_builder::create_plane());
+	meshes["plane"] = mesh(geometry_builder::create_plane());
 	meshes["earth"] = mesh(geometry_builder::create_sphere(20, 20));                                     //mesh(geometry("models/earth.obj"));
+	meshes["mercury"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["sun"] = mesh(geometry_builder::create_sphere(20,20));
+	meshes["moon"] = mesh(geometry_builder::create_sphere(20, 20));
+
   //Transform Objects
-	meshes["sun"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
-	meshes["sun"].get_transform().rotate(vec3(half_pi<float>()*3, 0.0f, 0.0f));
+	meshes["plane"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
+	meshes["sun"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
+	meshes["sun"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 	meshes["sun"].get_transform().translate(vec3(0.0f, 0.0f,0.0f));
-    meshes["earth"].get_transform().scale = vec3(1.0f, 1.0f, 1.0f);
+	meshes["mercury"].get_transform().scale = vec3(0.23f, 0.23f, 0.23f);
+	meshes["mercury"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+    meshes["earth"].get_transform().scale = vec3(0.5f, 0.5f, 0.5f);
     meshes["earth"].get_transform().translate(vec3(meshes["sun"].get_transform().position.x + 30.0f, meshes["sun"].get_transform().position.y + 30.0f, 0.0f));
+	meshes["moon"].get_transform().scale = vec3(0.1, 0.1, 0.1);
+	meshes["moon"].get_transform().translate(vec3(meshes["earth"].get_transform().position.x + 10.0f, meshes["earth"].get_transform().position.y + 10.0f, 0.0f));
 
 	material mat;
 	// *********************************
@@ -43,16 +53,29 @@ bool load_content() {
 	// - all emissive is black
 	// - all specular is white
 	// - all shininess is 25
-	mat.set_emissive(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	mat.set_specular(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	mat.set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	mat.set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	mat.set_shininess(100.0f);
 
+	//Sun to yellow
+	mat.set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	mat.set_diffuse(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	meshes["sun"].set_material(mat);
+	//Earth to azure
+	mat.set_emissive(vec4(0.0f, 0.5f, 1.0f, 1.0f));
+	mat.set_diffuse(vec4(0.0f, 0.5f, 1.0f, 1.0f));
+	meshes["earth"].set_material(mat);
+
+	//Moon to white
+	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	meshes["earth"].set_material(mat);
 
 	// Load texture
 	tex["earth"] = texture("textures/4096_earth.jpg"); 
 
 	// Set lighting values, Position (-25, 10, -10)
-	light.set_position(vec3(0.0f, 10.0f,0.0f));
+	light.set_position(vec3(0.0f, 100.0f,0.0f));
 	// Light colour white
 	light.set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	// Set range to 20
@@ -76,6 +99,7 @@ bool load_content() {
 bool update(float delta_time) {
 
 	static float range = 20.0f;
+
   //Move Camera
 	if (glfwGetKey(renderer::get_window(), '1')) {
 		cam.set_position(vec3(50, 10, 50));
@@ -99,18 +123,40 @@ bool update(float delta_time) {
 	}
 
 
+	meshes["plane"].get_transform().position = vec3(0.0f,-20.0f,0.0f);
+
 	//Move Around the Sun
 
 
+	if (glfwGetKey(renderer::get_window(), 'L')) {
+		button = true;
+	}
+	if (glfwGetKey(renderer::get_window(), 'K')) {
+		button = false;
+	}
+
+
+	if (button) {
+		meshes["earth"].get_transform().position = (vec3(cos(velocity)*50.0f, 0.0f, sin(velocity)*50.0f) + meshes["sun"].get_transform().position);
+		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*15.0f, 0.0f, sin(velocity*3.0f)*15.0f) + meshes["sun"].get_transform().position);
+	}
+	else {
+		meshes["earth"].get_transform().position = vec3(meshes["earth"].get_transform().position.x, meshes["earth"].get_transform().position.y, meshes["earth"].get_transform().position.z);
+		meshes["mercury"].get_transform().position = vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z);
+	}
+
+
+	//Move moon around the earth
+	meshes["moon"].get_transform().position = (vec3(cos(velocity*2.0f)*2.0f, 0.0f, sin(velocity*2.0f)*2.0f) + meshes["earth"].get_transform().position);
 
 	//Set Range
 	light.set_range(range);
 
 	//Rotate Planets
 
-	meshes["sun"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()) * delta_time);
-	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f , half_pi<float>()) * delta_time);
-	
+	meshes["sun"].get_transform().rotate(vec3(0.0f, 0.0f, pi<float>()) * delta_time);
+	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()) * delta_time);
+	meshes["mercury"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()/*58.7f*/) * delta_time);
 
 	// The ratio of pixels to rotation - remember the fov
 	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
@@ -154,7 +200,11 @@ bool update(float delta_time) {
   cam.update(delta_time);
   cursor_x = current_x;
   cursor_y = current_y;
+
+  velocity -= delta_time;
   return true;
+
+
 }
 
 bool render() {
