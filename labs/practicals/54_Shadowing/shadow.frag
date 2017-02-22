@@ -59,7 +59,7 @@ void main() {
   // *********************************
   // Calculate shade factor
   float shade = calculate_shadow(shadow_map,light_space_pos);
-  // Calculate view direction
+  // Calculate view direction, normalize it
     vec3 view_dir = normalize(eye_pos - vertex_position);
   // Sample texture
   vec4 sample_texture = texture(tex, tex_coord_out);
@@ -67,6 +67,7 @@ void main() {
   colour = calculate_spot(spot, mat, vertex_position, transformed_normal, view_dir, sample_texture);
   // Scale colour by shade
   colour *= shade;
+  //Ensure alpha is 1.0
   colour.a = 1.0f;
   // *********************************
 }
