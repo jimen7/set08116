@@ -59,8 +59,8 @@ void main() {
   // Calculate view direction
   vec3 view_dir = normalize(eye_pos - vertex_position);
   // Calculate normal from normal map
-  calc_normal(transformed_normal, tangent_out, binormal_out, normal_map, tex_coord_out);
+  vec3 calculated_normal = calc_normal(transformed_normal, tangent_out, binormal_out, normal_map, tex_coord_out);
   // Calculate directional light
-
+  colour = calculate_direction(light, mat, calculated_normal, view_dir, sample_texture);
   // *********************************
 }

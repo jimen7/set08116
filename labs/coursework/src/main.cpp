@@ -6,13 +6,16 @@ using namespace graphics_framework;
 using namespace glm;
 
 map<string, mesh> meshes;
+mesh skybox;
 geometry geom;
 effect eff;
+effect sky_eff;
 free_camera cam;
 double cursor_x;
 double cursor_y;
 map<string, texture> tex;
 point_light light;	
+cubemap cube_map;
 float velocity;
 bool button = true;
 
@@ -28,6 +31,15 @@ bool initialise() {
 }
 
 bool load_content() {
+	// Create box geometry for skybox
+	skybox = mesh(geometry_builder::create_box());
+	// Scale box by 100
+	skybox.get_transform().scale *= 100.0f;
+	// Load the cubemap
+	array<string, 6> filenames = { "textures/stars_fr.jpg", "textures/stars_bk.jpg", "textures/stars_up.jpg",
+		"textures/stars_dn.jpg", "textures/stars_rt.jpg", "textures/stars_lf.jpg" };
+	// Create cube_map
+	cube_map = cubemap(filenames);
   // Create Sphere
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 	meshes["earth"] = mesh(geometry_builder::create_sphere(20, 20));                                     //mesh(geometry("models/earth.obj"));
@@ -86,6 +98,11 @@ bool load_content() {
   eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
   // Build effect
   eff.build();
+  //Load in Skybox shaders
+  sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
+  sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
+  // Build effect
+  sky_eff.build();
 
   // Set camera properties
   cam.set_position(vec3(0.0f, 10.0f, 0.0f));
@@ -147,7 +164,7 @@ bool update(float delta_time) {
 
 
 	//Move moon around the earth
-	meshes["moon"].get_transform().position = (vec3(cos(velocity*2.0f)*2.0f, 0.0f, sin(velocity*2.0f)*2.0f) + meshes["earth"].get_transform().position);
+	meshes["moon"].get_transform().position = (vec3(cos(velocity*3.0f)*2.0f, 0.0f, sin(velocity*3.0f)*2.0f) + meshes["earth"].get_transform().position);
 
 	//Set Range
 	light.set_range(range);
@@ -201,6 +218,9 @@ bool update(float delta_time) {
   cursor_x = current_x;
   cursor_y = current_y;
 
+  // Set skybox position to camera position (camera in centre of skybox)
+  skybox.get_transform().position = cam.get_position();
+
   velocity -= delta_time;
   return true;
 
@@ -208,16 +228,40 @@ bool update(float delta_time) {
 }
 
 bool render() {
+	// Disable depth test,depth mask,face culling
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+	glDisable(GL_CULL_FACE);
+	// Bind skybox effect
+	renderer::bind(sky_eff);
+	// Calculate MVP for the skybox
+	auto M = skybox.get_transform().get_transform_matrix();
+	auto V = cam.get_view();
+	auto P = cam.get_projection();
+	auto MVP = P * V * M;
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(sky_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	// Set cubemap uniform
+	renderer::bind(cube_map, 0);
+	glUniform1i(sky_eff.get_uniform_location("cubemap"), 0);
+	// Render skybox
+	renderer::render(skybox);
+	// Enable depth test,depth mask,face culling
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	// *********************************
+
 	// Render meshes
 	for (auto &e : meshes) {
 		auto m = e.second;
 		// Bind effect
 		renderer::bind(eff);
 		// Create MVP matrix
-		auto M = m.get_transform().get_transform_matrix();
-		auto V = cam.get_view();
-		auto P = cam.get_projection();
-		auto MVP = P * V * M;
+		 M = m.get_transform().get_transform_matrix();
+		 V = cam.get_view();
+		 P = cam.get_projection();
+		 MVP = P * V * M;
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform
 			1,                               // Number of values - 1 mat4
