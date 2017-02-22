@@ -74,9 +74,9 @@ bool update(float delta_time) {
 
   // *********************************
   // Update the shadow map light_position from the spot light
-  shadow.light_position = spot.get_position();
+	shadow.light_position = spot.get_position();
   // do the same for light_dir property
-  shadow.light_dir = spot.get_direction();
+	shadow.light_dir = spot.get_direction();
   // *********************************
 
   // Press s to save
@@ -94,9 +94,11 @@ bool render() {
   // Set render target to shadow map
 	renderer::set_render_target(shadow);
   // Clear depth buffer bit
+
 	glClear(GL_DEPTH_BUFFER_BIT);
-  // Set face cull mode to front
+     // Set face cull mode to front
 	glCullFace(GL_FRONT);
+
   // *********************************
 
   // Bind shader
@@ -122,9 +124,11 @@ bool render() {
 
   // *********************************
   // Set render target back to the screen
-  renderer::set_render_target();
+
+	renderer::set_render_target();
   // Set face cull mode to back
-  glCullFace(GL_BACK);
+    glCullFace(GL_BACK);
+
   // *********************************
 
   return true;
