@@ -58,7 +58,7 @@ bool load_content() {
   meshes["tetra"].set_material(mat);
   // Blue pyramid
   mat.set_diffuse(vec4(0.0f, 0.0f, 1.0f, 1.0f));
-  meshes["box"].set_material(mat);
+  meshes["pyramid"].set_material(mat);
   // Yellow disk
   mat.set_diffuse(vec4(1.0f, 1.0f, 0.0f, 1.0f));
   meshes["disk"].set_material(mat);
@@ -79,7 +79,7 @@ bool load_content() {
   // *********************************
 
   // Load texture
-  tex = texture("textures/checker.png");
+  tex = texture("textures/checked.gif");
 
   // *********************************
   // Set lighting values

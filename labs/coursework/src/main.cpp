@@ -78,7 +78,7 @@ bool load_content() {
 	//Earth to azure
 	mat.set_emissive(vec4(0.0f, 0.5f, 1.0f, 1.0f));
 	mat.set_diffuse(vec4(0.0f, 0.5f, 1.0f, 1.0f));
-	normal_meshes["earth"].set_material(mat);
+	normal_meshes["earth"].set_material(mat); 
 
 	//Moon to white
 	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f)); 
@@ -99,7 +99,7 @@ bool load_content() {
 	// Set range to 20
 	light.set_range(1000.0f);
 
-  // Load in shaders
+  // Load in shaders 
   eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);
   eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
   eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
@@ -127,7 +127,7 @@ bool update(float delta_time) {
   //Move Camera
 	if (glfwGetKey(renderer::get_window(), '1')) {
 		cam.set_position(vec3(50, 10, 50));
-	}
+	} 
 	if (glfwGetKey(renderer::get_window(), '2')) {
 		cam.set_position(vec3(-50, 10, 50));
 	}

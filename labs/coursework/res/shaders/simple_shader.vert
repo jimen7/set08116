@@ -23,7 +23,7 @@ layout(location = 0) out vec3 vertex_position;
 // Outgoing transformed normal
 layout(location = 1) out vec3 transformed_normal;
 // Outgoing texture coordinate
-layout(location = 2) out vec2 tex_coord_out1;
+layout(location = 5) out vec2 tex_coord_out1;
 // Outgoing tangent
 layout(location = 3) out vec3 tangent_out;
 // Outgoing binormal
