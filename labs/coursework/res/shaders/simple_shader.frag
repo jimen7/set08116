@@ -17,6 +17,8 @@ struct material {
   float shininess;
 };
 
+vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord_out);
+
 // Point light for the scene
 uniform point_light point;
 // Material for the object
@@ -25,13 +27,19 @@ uniform material mat;
 uniform vec3 eye_pos;
 // Texture
 uniform sampler2D tex;
+// Normal map to sample from
+uniform sampler2D normal_map;
 
 // Incoming position
 layout(location = 0) in vec3 vertex_position;
 // Incoming normal
 layout(location = 1) in vec3 transformed_normal;
 // Incoming texture coordinate
-layout(location = 2) in vec2 tex_coord_out;
+layout(location = 2) in vec2 tex_coord_out1;
+// Incoming tangent
+layout(location = 3) in vec3 tangent_out;
+// Incoming binormal
+layout(location = 4) in vec3 binormal_out;
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
@@ -64,7 +72,9 @@ void main() {
   // Calculate specular
   vec4 specular = kb * (mat.specular_reflection * light_colour);
   // Sample texture
-  vec4 sample_texture = texture(tex, tex_coord_out);
+  vec4 sample_texture = texture(tex, tex_coord_out1);
+    // Calculate normal from normal map
+  vec3 calculated_normal = calc_normal(transformed_normal, tangent_out, binormal_out, normal_map, tex_coord_out1);
   // Calculate primary colour component
   vec4 primary = (mat.emissive + diffuse);
   // Calculate final colour - remember alpha

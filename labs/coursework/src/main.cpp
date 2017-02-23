@@ -6,6 +6,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 map<string, mesh> meshes;
+map<string, mesh> normal_meshes;
 mesh skybox;
 geometry geom;
 effect eff;
@@ -14,6 +15,7 @@ free_camera cam;
 double cursor_x;
 double cursor_y;
 map<string, texture> tex;
+map<string, texture> tex_normal_maps;
 point_light light;	
 cubemap cube_map;
 float velocity;
@@ -32,17 +34,17 @@ bool initialise() {
 
 bool load_content() {
 	// Create box geometry for skybox
-	skybox = mesh(geometry_builder::create_box());
+	skybox = mesh(geometry_builder::create_box()); 
 	// Scale box by 100
 	skybox.get_transform().scale *= 100.0f;
 	// Load the cubemap
-	array<string, 6> filenames = { "textures/stars_fr.jpg", "textures/stars_bk.jpg", "textures/stars_up.jpg",
-		"textures/stars_dn.jpg", "textures/stars_rt.jpg", "textures/stars_lf.jpg" };
+	array<string, 6> filenames = { "textures/purplenebula_ft.png", "textures/purplenebula_bk.png", "textures/purplenebula_up.png",
+		"textures/purplenebula_dn.png", "textures/purplenebula_rt.png", "textures/purplenebula_lf.png" };
 	// Create cube_map
 	cube_map = cubemap(filenames);
   // Create Sphere
 	meshes["plane"] = mesh(geometry_builder::create_plane());
-	meshes["earth"] = mesh(geometry_builder::create_sphere(20, 20));                                     //mesh(geometry("models/earth.obj"));
+	normal_meshes["earth"] = mesh(geometry_builder::create_sphere(20, 20));                                     //mesh(geometry("models/earth.obj"));
 	meshes["mercury"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["sun"] = mesh(geometry_builder::create_sphere(20,20));
 	meshes["moon"] = mesh(geometry_builder::create_sphere(20, 20));
@@ -54,8 +56,8 @@ bool load_content() {
 	meshes["sun"].get_transform().translate(vec3(0.0f, 0.0f,0.0f));
 	meshes["mercury"].get_transform().scale = vec3(0.23f, 0.23f, 0.23f);
 	meshes["mercury"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
-    meshes["earth"].get_transform().scale = vec3(0.5f, 0.5f, 0.5f);
-    meshes["earth"].get_transform().translate(vec3(meshes["sun"].get_transform().position.x + 30.0f, meshes["sun"].get_transform().position.y + 30.0f, 0.0f));
+	normal_meshes["earth"].get_transform().scale = vec3(0.5f, 0.5f, 0.5f);
+	normal_meshes["earth"].get_transform().translate(vec3(meshes["sun"].get_transform().position.x + 30.0f, meshes["sun"].get_transform().position.y + 30.0f, 0.0f));
 	meshes["moon"].get_transform().scale = vec3(0.1, 0.1, 0.1);
 	meshes["moon"].get_transform().translate(vec3(meshes["earth"].get_transform().position.x + 10.0f, meshes["earth"].get_transform().position.y + 10.0f, 0.0f));
 
@@ -76,26 +78,31 @@ bool load_content() {
 	//Earth to azure
 	mat.set_emissive(vec4(0.0f, 0.5f, 1.0f, 1.0f));
 	mat.set_diffuse(vec4(0.0f, 0.5f, 1.0f, 1.0f));
-	meshes["earth"].set_material(mat);
+	normal_meshes["earth"].set_material(mat);
 
 	//Moon to white
-	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f)); 
 	mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	meshes["earth"].set_material(mat);
+	meshes["moon"].set_material(mat); 
 
 	// Load texture
 	tex["earth"] = texture("textures/4096_earth.jpg"); 
+
+	// Load brick_normalmap.jpg texture
+	tex_normal_maps["sun"] = texture("textures/sunmap.jpg");
+	tex_normal_maps["earth"] = texture("textures/4096_normal.jpg");
 
 	// Set lighting values, Position (-25, 10, -10)
 	light.set_position(vec3(0.0f, 100.0f,0.0f));
 	// Light colour white
 	light.set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	// Set range to 20
-	light.set_range(100.0f);
+	light.set_range(1000.0f);
 
   // Load in shaders
   eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);
   eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
   // Build effect
   eff.build();
   //Load in Skybox shaders
@@ -133,10 +140,10 @@ bool update(float delta_time) {
 
 	// O and P to change range
 	if (glfwGetKey(renderer::get_window(), 'O')) {
-		range += 100.f*delta_time;
+		range += 500.f*delta_time;
 	}
 	if (glfwGetKey(renderer::get_window(), 'P')) {
-		range -= 100.f*delta_time;
+		range -= 500.f*delta_time;
 	}
 
 
@@ -154,11 +161,11 @@ bool update(float delta_time) {
 
 
 	if (button) {
-		meshes["earth"].get_transform().position = (vec3(cos(velocity)*50.0f, 0.0f, sin(velocity)*50.0f) + meshes["sun"].get_transform().position);
+		normal_meshes["earth"].get_transform().position = (vec3(cos(velocity)*50.0f, 0.0f, sin(velocity)*50.0f) + meshes["sun"].get_transform().position);
 		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*15.0f, 0.0f, sin(velocity*3.0f)*15.0f) + meshes["sun"].get_transform().position);
 	}
 	else {
-		meshes["earth"].get_transform().position = vec3(meshes["earth"].get_transform().position.x, meshes["earth"].get_transform().position.y, meshes["earth"].get_transform().position.z);
+		normal_meshes["earth"].get_transform().position = vec3(meshes["earth"].get_transform().position.x, meshes["earth"].get_transform().position.y, meshes["earth"].get_transform().position.z);
 		meshes["mercury"].get_transform().position = vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z);
 	}
 
@@ -171,8 +178,8 @@ bool update(float delta_time) {
 
 	//Rotate Planets
 
-	meshes["sun"].get_transform().rotate(vec3(0.0f, 0.0f, pi<float>()) * delta_time);
-	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()) * delta_time);
+	meshes["sun"].get_transform().rotate(vec3(0.0f, 0.0f, -pi<float>()) * delta_time);
+	normal_meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()) * delta_time);
 	meshes["mercury"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()/*58.7f*/) * delta_time);
 
 	// The ratio of pixels to rotation - remember the fov
@@ -258,7 +265,7 @@ bool render() {
 		// Bind effect
 		renderer::bind(eff);
 		// Create MVP matrix
-		 M = m.get_transform().get_transform_matrix();
+		 M = m.get_transform().get_transform_matrix(); 
 		 V = cam.get_view();
 		 P = cam.get_projection();
 		 MVP = P * V * M;
@@ -281,6 +288,10 @@ bool render() {
 		renderer::bind(tex["earth"], 0);
 		// Set tex uniform
 		glUniform1i(eff.get_uniform_location("tex"), 0);
+		// Bind normal_map
+		renderer::bind(tex_normal_maps["earth"], 1);
+		// Set normal_map uniform
+	    glUniform1i(eff.get_uniform_location("normal_map"), 1);
 		// Set eye position- Get this from active camera
 		glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
 		// Render mesh
