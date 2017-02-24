@@ -49,6 +49,8 @@ bool load_content() {
 	meshes["mercury"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["sun"] = mesh(geometry_builder::create_sphere(20,20));
 	meshes["moon"] = mesh(geometry_builder::create_sphere(20, 20));
+	meshes["falcon"] = mesh(geometry("models/starwars-millennium-falcon.obj"));
+	meshes["god"] = mesh(geometry("models/hand.OBJ"));
 
   //Transform Objects
 	meshes["plane"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
@@ -60,8 +62,11 @@ bool load_content() {
 	normal_meshes["earth"].get_transform().scale = vec3(2.0f, 2.0f, 2.0f);
 	normal_meshes["earth"].get_transform().translate(vec3(meshes["sun"].get_transform().position.x + 30.0f, meshes["sun"].get_transform().position.y + 30.0f, 0.0f));
 	normal_meshes["earth"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
-	meshes["moon"].get_transform().scale = vec3(0.5, 0.5, 0.5);
+	meshes["moon"].get_transform().scale = vec3(0.5f, 0.5f, 0.5f);
 	meshes["moon"].get_transform().translate(vec3(normal_meshes["earth"].get_transform().position.x + 10.0f, normal_meshes["earth"].get_transform().position.y + 10.0f, 0.0f));
+	meshes["falcon"].get_transform().scale = vec3(0.00001f, 0.00001f, 0.00001f);
+	meshes["falcon"].get_transform().translate(vec3(0.0f,50.0f,0.0f));
+	meshes["god"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
 
 	material mat;
 	// *********************************
@@ -87,12 +92,20 @@ bool load_content() {
 	mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	meshes["moon"].set_material(mat); 
 
+	mat.set_emissive(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	meshes["falcon"].set_material(mat);
+
+	//mat.set_emissive(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	meshes["god"].set_material(mat);
+
 	// Load texture
 	tex["earth"] = texture("textures/4096_earth.jpg"); 
 	tex["sun"] = texture("textures/sun.jpg");
 	tex["moon"] = texture("textures/moon.jpg");
 	tex["plane"] = texture("textures/check_1.png");
 	tex["mercury"] = texture("textures/mercury.jpg");
+	tex["falcon"] = texture("textures/falcon.jpg");
+	tex["god"] = texture("textures/water.jpg");
 
 	// Load brick_normalmap.jpg texture
 	tex_normal_maps["earth"] = texture("textures/4096_normal.jpg");
@@ -133,11 +146,13 @@ bool load_content() {
 
 bool update(float delta_time) {
 
+	//cout << 1 / delta_time << endl;
+
 	static float range = 20.0f;
 
   //Move Camera
 	if (glfwGetKey(renderer::get_window(), '1')) {
-		cam.set_position(vec3(50, 10, 50));
+		cam.set_position(vec3(meshes["god"].get_transform().position.x, meshes["god"].get_transform().position.y, meshes["god"].get_transform().position.z));
 	} 
 	if (glfwGetKey(renderer::get_window(), '2')) {
 		cam.set_position(vec3(-50, 10, 50));
@@ -158,7 +173,7 @@ bool update(float delta_time) {
 	}
 
 
-	meshes["plane"].get_transform().position = vec3(0.0f,-20.0f,0.0f);
+	meshes["plane"].get_transform().position = vec3(0.0f,-50.0f,0.0f);
 
 	//Move Around the Sun
 
@@ -175,11 +190,15 @@ bool update(float delta_time) {
 		normal_meshes["earth"].get_transform().position = (vec3(cos(velocity)*50.0f, 0.0f, sin(velocity)*50.0f) + meshes["sun"].get_transform().position);
 		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*30.0f, 0.0f, sin(velocity*3.0f)*30.0f) + meshes["sun"].get_transform().position);
 		meshes["moon"].get_transform().position = (vec3(cos(velocity*3.0f)*3.0f, 0.0f, sin(velocity*3.0f)*3.0f) + normal_meshes["earth"].get_transform().position);
+		meshes["god"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
 	else {
 		normal_meshes["earth"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z);
 		meshes["mercury"].get_transform().position = vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z);
 		meshes["moon"].get_transform().position = vec3(meshes["moon"].get_transform().position.x, meshes["moon"].get_transform().position.y, meshes["moon"].get_transform().position.z);
+		meshes["god"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
+		meshes["god"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 5.0f, normal_meshes["earth"].get_transform().position.z);
+
 	}
 
 	
@@ -239,7 +258,7 @@ bool update(float delta_time) {
   // Set skybox position to camera position (camera in centre of skybox)
   skybox.get_transform().position = cam.get_position();
 
-  velocity -= delta_time;
+  velocity -= delta_time*(1.0f- exp(1.0))/(1.0f + exp(1.0));
   return true;
 
 
