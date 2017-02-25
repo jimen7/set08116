@@ -20,7 +20,9 @@ map<string, texture> tex_normal_maps;
 point_light light;	
 cubemap cube_map;
 float velocity;
+float moon_velocity;
 bool button = true;
+bool plane = false;
 
 
 bool initialise() {
@@ -45,25 +47,50 @@ bool load_content() {
 	cube_map = cubemap(filenames);
   // Create Sphere
 	meshes["plane"] = mesh(geometry_builder::create_plane());
-	normal_meshes["earth"] = mesh(geometry_builder::create_sphere(20, 20));                                     //mesh(geometry("models/earth.obj"));
-	meshes["mercury"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["sun"] = mesh(geometry_builder::create_sphere(20,20));
+	meshes["mercury"] = mesh(geometry_builder::create_sphere(20, 20));
+	meshes["venus"] = mesh(geometry_builder::create_sphere(20, 20));
+	normal_meshes["earth"] = mesh(geometry_builder::create_sphere(20, 20));                                     //mesh(geometry("models/earth.obj"));
 	meshes["moon"] = mesh(geometry_builder::create_sphere(20, 20));
+	meshes["mars"] = mesh(geometry_builder::create_sphere(20, 20));
+	meshes["jupiter"] = mesh(geometry_builder::create_sphere(20, 20));
+	meshes["saturn"] = mesh(geometry("models/saturn.obj"));
+	meshes["uranus"] = mesh(geometry_builder::create_sphere(20, 20));
+	meshes["neptune"] = mesh(geometry_builder::create_sphere(20, 20));
+
 	meshes["falcon"] = mesh(geometry("models/starwars-millennium-falcon.obj"));
 	meshes["god"] = mesh(geometry("models/hand.OBJ"));
 
   //Transform Objects
-	meshes["plane"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
-	meshes["sun"].get_transform().scale = vec3(20.0f, 20.0f, 20.0f);
+	//meshes["plane"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
+	meshes["plane"].get_transform().translate(vec3(0.0f, -60.0f, 0.0f));
+	meshes["sun"].get_transform().scale = vec3(30.0f, 30.0f, 30.0f);
 	meshes["sun"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
 	meshes["sun"].get_transform().translate(vec3(0.0f, 0.0f,0.0f));
 	meshes["mercury"].get_transform().scale = vec3(0.23f, 0.23f, 0.23f);
 	meshes["mercury"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
-	normal_meshes["earth"].get_transform().scale = vec3(2.0f, 2.0f, 2.0f);
+	meshes["venus"].get_transform().scale = vec3(1.5f, 1.5f, 1.5f);
+	meshes["venus"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+	normal_meshes["earth"].get_transform().scale = vec3(1.0f, 1.0f, 1.0f);
 	normal_meshes["earth"].get_transform().translate(vec3(meshes["sun"].get_transform().position.x + 30.0f, meshes["sun"].get_transform().position.y + 30.0f, 0.0f));
 	normal_meshes["earth"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
-	meshes["moon"].get_transform().scale = vec3(0.5f, 0.5f, 0.5f);
+	meshes["moon"].get_transform().scale = vec3(0.16f, 0.16f, 0.16f);
 	meshes["moon"].get_transform().translate(vec3(normal_meshes["earth"].get_transform().position.x + 10.0f, normal_meshes["earth"].get_transform().position.y + 10.0f, 0.0f));
+	meshes["mars"].get_transform().scale = vec3(0.48f, 0.48f, 0.48f);
+	meshes["mars"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+	meshes["mars"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
+	meshes["jupiter"].get_transform().scale = vec3(11.3f, 11.3f, 11.3f);
+	meshes["jupiter"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+	meshes["jupiter"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
+	meshes["saturn"].get_transform().scale = vec3(11.0f, 11.0f, 11.0f);
+	meshes["saturn"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+	meshes["uranus"].get_transform().scale = vec3(4.1f, 4.1f, 4.1f);
+	meshes["uranus"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+	meshes["uranus"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
+	meshes["neptune"].get_transform().scale = vec3(3.8f, 3.8f, 3.8f);
+	meshes["neptune"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+	meshes["neptune"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
+
 	meshes["falcon"].get_transform().scale = vec3(0.00001f, 0.00001f, 0.00001f);
 	meshes["falcon"].get_transform().translate(vec3(0.0f,50.0f,0.0f));
 	meshes["god"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
@@ -76,7 +103,7 @@ bool load_content() {
 	// - all shininess is 25
 	mat.set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	mat.set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	mat.set_shininess(100.0f);
+	mat.set_shininess(25.0f);
 
 	//Sun to yellow
 	mat.set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
@@ -88,9 +115,22 @@ bool load_content() {
 	normal_meshes["earth"].set_material(mat); 
 
 	//Moon to white
-	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f)); 
+	mat.set_emissive(vec4(0.2f, 0.2f, 0.2f, 1.0f)); 
 	mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	meshes["moon"].set_material(mat); 
+
+	//Brighter planets
+	mat.set_emissive(vec4(0.1f, 0.1f, 0.1f, 1.0f));
+	meshes["plane"].set_material(mat);
+	meshes["mercury"].set_material(mat);
+	meshes["venus"].set_material(mat);
+	normal_meshes["earth"].set_material(mat);
+	meshes["mars"].set_material(mat);
+	meshes["jupiter"].set_material(mat);
+	meshes["saturn"].set_material(mat);
+	meshes["uranus"].set_material(mat);
+	meshes["neptune"].set_material(mat);
+
 
 	mat.set_emissive(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	meshes["falcon"].set_material(mat);
@@ -99,13 +139,22 @@ bool load_content() {
 	meshes["god"].set_material(mat);
 
 	// Load texture
-	tex["earth"] = texture("textures/4096_earth.jpg"); 
-	tex["sun"] = texture("textures/sun.jpg");
-	tex["moon"] = texture("textures/moon.jpg");
 	tex["plane"] = texture("textures/check_1.png");
+	tex["sun"] = texture("textures/sun.jpg");
 	tex["mercury"] = texture("textures/mercury.jpg");
+	tex["venus"] = texture("textures/venus.jpg");
+	tex["earth"] = texture("textures/4096_earth.jpg"); 
+	tex["moon"] = texture("textures/moon.jpg");
+	tex["mars"] = texture("textures/mars.jpg");
+	tex["jupiter"] = texture("textures/jupiter.jpg");
+	tex["saturn"] = texture("textures/saturn.jpg"); 
+	tex["uranus"] = texture("textures/uranus.jpg");
+	tex["neptune"] = texture("textures/neptune.jpg");
+
+
 	tex["falcon"] = texture("textures/falcon.jpg");
 	tex["god"] = texture("textures/water.jpg");
+
 
 	// Load brick_normalmap.jpg texture
 	tex_normal_maps["earth"] = texture("textures/4096_normal.jpg");
@@ -113,8 +162,8 @@ bool load_content() {
 	// Set lighting values, Position (-25, 10, -10)
 	light.set_position(vec3(0.0f, 0.0f, 0.0f));
 	// Light colour white
-	light.set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	// Set range to 20
+	light.set_light_colour(vec4(1.0f, 1.0f, 0.5f, 1.0f));
+	// Set range to 1000
 	light.set_range(1000.0f);
 
   // Load in shaders 
@@ -148,7 +197,7 @@ bool update(float delta_time) {
 
 	//cout << 1 / delta_time << endl;
 
-	static float range = 20.0f;
+	static float range = 100.0f;
 
   //Move Camera
 	if (glfwGetKey(renderer::get_window(), '1')) {
@@ -165,15 +214,15 @@ bool update(float delta_time) {
 	}
 
 	// O and P to change range
-	if (glfwGetKey(renderer::get_window(), 'O')) {
+	if (glfwGetKey(renderer::get_window(), 'P')) {
 		range = range*(1.0f + 2.0f*delta_time); 
 	}
-	if (glfwGetKey(renderer::get_window(), 'P')) {
+	if (glfwGetKey(renderer::get_window(), 'O')) {
 		range = range*(1.0f - 2.0f*delta_time);
 	}
 
 
-	meshes["plane"].get_transform().position = vec3(0.0f,-50.0f,0.0f);
+	//meshes["plane"].get_transform().position = vec3(0.0f,-60.0f,0.0f);
 
 	//Move Around the Sun
 
@@ -186,31 +235,65 @@ bool update(float delta_time) {
 	}
 
 
+	if (glfwGetKey(renderer::get_window(), 'G')) {
+		if (plane == true) {
+			meshes["plane"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
+			plane = false;
+		}
+		else {
+			meshes["plane"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
+			plane = true;
+		}
+	}
+
+
 	if (button) {
-		normal_meshes["earth"].get_transform().position = (vec3(cos(velocity)*50.0f, 0.0f, sin(velocity)*50.0f) + meshes["sun"].get_transform().position);
-		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*30.0f, 0.0f, sin(velocity*3.0f)*30.0f) + meshes["sun"].get_transform().position);
-		meshes["moon"].get_transform().position = (vec3(cos(velocity*3.0f)*3.0f, 0.0f, sin(velocity*3.0f)*3.0f) + normal_meshes["earth"].get_transform().position);
+		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*35.0f, 0.0f, sin(velocity*3.0f)*35.0f) + meshes["sun"].get_transform().position);		
+		meshes["venus"].get_transform().position = (vec3(cos(velocity*2.0f)*45.0f, 0.0f, sin(velocity*2.0f)*45.0f) + meshes["sun"].get_transform().position);
+		normal_meshes["earth"].get_transform().position = (vec3(cos(velocity)*55.0f, 0.0f, sin(velocity)*55.0f) + meshes["sun"].get_transform().position);
+		meshes["moon"].get_transform().position = (vec3(cos(moon_velocity*3.0f)*3.0f, 0.0f, sin(moon_velocity*3.0f)*3.0f) + normal_meshes["earth"].get_transform().position);
+		meshes["mars"].get_transform().position = (vec3(cos(velocity*0.8f)*65.0f, 0.0f, sin(velocity*0.8f)*65.0f) + meshes["sun"].get_transform().position);
+		meshes["jupiter"].get_transform().position = (vec3(cos(velocity*0.7f)*80.0f, 0.0f, sin(velocity*0.7f)*80.0f) + meshes["sun"].get_transform().position);
+		meshes["saturn"].get_transform().position = (vec3(cos(velocity*0.6f)*95.0f, 0.0f, sin(velocity*0.6f)*95.0f) + meshes["sun"].get_transform().position);
+		meshes["uranus"].get_transform().position = (vec3(cos(velocity*0.5f)*110.0f, 0.0f, sin(velocity*0.5f)*110.0f) + meshes["sun"].get_transform().position);
+		meshes["neptune"].get_transform().position = (vec3(cos(velocity*0.4f)*125.0f, 0.0f, sin(velocity*0.4f)*125.0f) + meshes["sun"].get_transform().position);
+
+
 		meshes["god"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
 	else {
-		normal_meshes["earth"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z);
 		meshes["mercury"].get_transform().position = vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z);
+		meshes["venus"].get_transform().position = vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y, meshes["venus"].get_transform().position.z);
+		normal_meshes["earth"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z);
 		meshes["moon"].get_transform().position = vec3(meshes["moon"].get_transform().position.x, meshes["moon"].get_transform().position.y, meshes["moon"].get_transform().position.z);
-		meshes["god"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
-		meshes["god"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 5.0f, normal_meshes["earth"].get_transform().position.z);
+		meshes["mars"].get_transform().position = vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y, meshes["mars"].get_transform().position.z);
+		meshes["jupiter"].get_transform().position = vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y, meshes["jupiter"].get_transform().position.z);
+		meshes["saturn"].get_transform().position = vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y, meshes["saturn"].get_transform().position.z);
+		meshes["uranus"].get_transform().position = vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y, meshes["uranus"].get_transform().position.z);
+		meshes["neptune"].get_transform().position = vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y, meshes["neptune"].get_transform().position.z);
+
+
+		//meshes["god"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
+		//meshes["god"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 5.0f, normal_meshes["earth"].get_transform().position.z);
 
 	}
 
 	
 
 	//Set Range
-	light.set_range(range);
+	light.set_range(range); 
 
-	//Rotate Planets
+	//Rotate Planets with aproximate values based on the earth's rotation
 
 	meshes["sun"].get_transform().rotate(vec3(0.0f, 0.0f, -pi<float>()) * delta_time);
+	meshes["venus"].get_transform().rotate(vec3(0.0f, 0.0f, -half_pi<float>() / 243.0f) * delta_time);
+	meshes["mercury"].get_transform().rotate(vec3(0.0f, 0.0f,-half_pi<float>()/58.6f) * delta_time);
 	normal_meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, -half_pi<float>()) * delta_time);
-	meshes["mercury"].get_transform().rotate(vec3(0.0f, 0.0f,-half_pi<float>()) * delta_time);
+	meshes["mars"].get_transform().rotate(vec3(0.0f, 0.0f, -half_pi<float>()/1.041f) * delta_time);
+	meshes["jupiter"].get_transform().rotate(vec3(0.0f, 0.0f, -half_pi<float>()/ 0.416f) * delta_time);
+	meshes["saturn"].get_transform().rotate(vec3(0.0f, -half_pi<float>()/0.458, 0.0f) * delta_time);
+	meshes["uranus"].get_transform().rotate(vec3(0.0f, 0.0f, -half_pi<float>() / 0.708f) * delta_time);
+	meshes["neptune"].get_transform().rotate(vec3(0.0f, 0.0f, -half_pi<float>() / 0.666f) * delta_time);
 
 	// The ratio of pixels to rotation - remember the fov
 	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
@@ -258,7 +341,9 @@ bool update(float delta_time) {
   // Set skybox position to camera position (camera in centre of skybox)
   skybox.get_transform().position = cam.get_position();
 
-  velocity -= delta_time*(1.0f- exp(1.0))/(1.0f + exp(1.0));
+  velocity -= delta_time*(1.0f- exp(1.0))/(1.0f + exp(1.0));  //Equation for elliptical orbit
+  moon_velocity -= delta_time;
+  
   return true;
 
 
@@ -297,6 +382,44 @@ void renderMeshes() {
 	for (auto &e : meshes) {
 		if (e.first == "sun") {
 
+		}
+		else if (e.first == "saturn") {
+			auto m = e.second;
+			// Disable Cull face so Ring is visible from both sides
+			glDisable(GL_CULL_FACE);
+			// Bind effect
+			renderer::bind(eff);
+			// Create MVP matrix
+			auto M = m.get_transform().get_transform_matrix();
+			auto V = cam.get_view();
+			auto P = cam.get_projection();
+			auto MVP = P * V * M;
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform
+				1,                               // Number of values - 1 mat4
+				GL_FALSE,                        // Transpose the matrix?
+				value_ptr(MVP));                 // Pointer to matrix data
+
+												 // *********************************
+												 // Set M matrix uniform
+			glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+			// Set N matrix uniform - remember - 3x3 matrix
+			glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(m.get_transform().get_normal_matrix()));
+			// Bind material
+			renderer::bind(m.get_material(), "mat");
+			// Bind light
+			renderer::bind(light, "point");
+			// Bind texture
+			renderer::bind(tex[e.first], 0);
+			// Set tex uniform
+			glUniform1i(eff.get_uniform_location("tex"), 0);
+			// Set eye position - Get this from active camera
+			glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
+			// Render mesh
+			renderer::render(m);
+			//glEnable(GL_DEPTH_TEST);
+			//glDepthMask(GL_TRUE);
+			glEnable(GL_CULL_FACE);
 		}
 		else {
 			auto m = e.second;
