@@ -70,6 +70,8 @@ bool load_content() {
 }
 
 bool update(float delta_time) {
+	// The target object
+	static mesh &target_mesh = meshes["chaser"];
   // The ratio of pixels to rotation - remember the fov
   static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
   static double ratio_height =

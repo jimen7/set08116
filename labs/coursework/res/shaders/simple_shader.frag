@@ -32,8 +32,8 @@ struct material {
 };
 
 vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord_out);
-vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
-                    in vec4 tex_colour);
+//vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
+         //           in vec4 tex_colour);
 
 // Point light for the scene
 uniform point_light point;
@@ -101,9 +101,9 @@ void main() {
   colour.a = 1.0f;
 
     // Sum spot lights
-  for (int i = 0; i < 8; ++i) {
-	colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, sample_texture);
-  }
+//  for (int i = 0; i < 8; ++i) {
+	//colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, sample_texture);
+ // }
 
   // *********************************
 }
