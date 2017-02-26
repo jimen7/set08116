@@ -8,7 +8,7 @@ using namespace glm;
 map<string, mesh> meshes;
 map<string, mesh> normal_meshes;
 mesh skybox;
-geometry geom;
+//geometry geom;
 effect eff;
 effect sky_eff;
 effect sun_eff;
@@ -19,6 +19,7 @@ map<string, texture> tex;
 map<string, texture> tex_normal_maps;
 point_light light;	
 cubemap cube_map;
+vector<spot_light> spots(8);
 float velocity;
 float moon_velocity;
 bool button = true;
@@ -159,17 +160,32 @@ bool load_content() {
 	// Load brick_normalmap.jpg texture
 	tex_normal_maps["earth"] = texture("textures/4096_normal.jpg");
 
-	// Set lighting values, Position (-25, 10, -10)
+	// Spot 0, Position (-25, 10, -15)
+	// Green, Direction (1, -1, -1) normalized
+	// 20 range,0.5 power
+	spots[0].set_position(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y + 30.0f, meshes["mercury"].get_transform().position.z));
+	spots[0].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	spots[0].set_direction(normalize(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z)));
+	spots[0].set_range(20.0f);
+	spots[0].set_power(0.5f);
+
+
+
+
+
+
+	//Point light - Set lighting values, Position (-25, 10, -10)
 	light.set_position(vec3(0.0f, 0.0f, 0.0f));
-	// Light colour white
+	//Point light - Light colour white
 	light.set_light_colour(vec4(1.0f, 1.0f, 0.5f, 1.0f));
-	// Set range to 1000
+	//Point light - Set range to 1000
 	light.set_range(1000.0f);
 
   // Load in shaders 
-  eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);
+  eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);   
   eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
   eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("shaders/part_spot.frag", GL_FRAGMENT_SHADER);
   // Build effect
   eff.build();
   //Load in Skybox shaders

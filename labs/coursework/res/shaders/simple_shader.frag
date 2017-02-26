@@ -9,6 +9,20 @@ struct point_light {
   float quadratic;
 };
 
+// Spot light data
+#ifndef SPOT_LIGHT
+#define SPOT_LIGHT
+struct spot_light {
+  vec4 light_colour;
+  vec3 position;
+  vec3 direction;
+  float constant;
+  float linear;
+  float quadratic;
+  float power;
+};
+#endif
+
 // Material information
 struct material { 
   vec4 emissive;
@@ -18,9 +32,13 @@ struct material {
 };
 
 vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord_out);
+vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
+                    in vec4 tex_colour);
 
 // Point light for the scene
 uniform point_light point;
+// Spot lights being used in the scene
+uniform spot_light spots[8];
 // Material for the object
 uniform material mat;
 // Eye position
@@ -81,6 +99,11 @@ void main() {
   primary.a = 1.0f;
   colour = (primary * sample_texture) + specular;
   colour.a = 1.0f;
+
+    // Sum spot lights
+  for (int i = 0; i < 8; ++i) {
+	colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, sample_texture);
+  }
 
   // *********************************
 }
