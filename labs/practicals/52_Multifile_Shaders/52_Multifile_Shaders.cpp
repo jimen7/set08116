@@ -180,7 +180,7 @@ bool load_content() {
                               "shaders/part_point.frag", "shaders/part_spot.frag"};
   eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
   // Build effect
-  eff.build();
+  eff.build(); 
 
   // Set camera properties
   cam.set_position(vec3(50.0f, 10.0f, 50.0f));

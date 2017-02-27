@@ -32,11 +32,10 @@ struct material
 vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir, in vec4 tex_colour)
 {
 	// *********************************
-	  vec3 vertex_position = vec3(M * vec4(position, 1.0));
 	// Calculate direction to the light
-	vec3 light_dir = normalize(spot.position - vertex_position);
+	vec3 light_dir = normalize(spot.position - position);
 	// Calculate distance to light
-	float d = distance(spot.position, vertex_position);
+	float d = distance(spot.position, position);
 	// Calculate attenuation value :  (constant + (linear * d) + (quadratic * d * d)
 	float a = (spot.constant + (spot.linear*d) + (spot.quadratic*d*d));
 	// Calculate spot light intensity :  (max( dot(light_dir, -direction), 0))^power

@@ -135,7 +135,7 @@ bool load_content() {
 	meshes["neptune"].set_material(mat);
 
 
-	mat.set_emissive(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	meshes["falcon"].set_material(mat);
 
 	//mat.set_emissive(vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -161,7 +161,7 @@ bool load_content() {
 
 	// Load brick_normalmap.jpg texture
 	tex_normal_maps["earth"] = texture("textures/4096_normal.jpg");
-	/*
+	
 	// Spot 0, Position (x of planet, y of planet plus 30, z of planet)
 	// Green, Direction (x of planet, y of planet, z of planet) normalized
 	// 20 range,0.5 power
@@ -176,7 +176,7 @@ bool load_content() {
 	// 20 range,0.5 power
 	spots[1].set_position(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y + 30.0f, meshes["venus"].get_transform().position.z));
 	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[1].set_direction(normalize(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y, meshes["vemus"].get_transform().position.z)));
+	spots[1].set_direction(normalize(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y, meshes["venus"].get_transform().position.z)));
 	spots[1].set_range(20.0f);
 	spots[1].set_power(0.5f);
 
@@ -203,11 +203,11 @@ bool load_content() {
 	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
 	// Green, Direction (x of planet, y of planet, z of planet) normalized
 	// 20 range,0.5 power
-	spots[4].set_position(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y + 30.0f, meshes["jupiter"].get_transform().position.z));
+	spots[4].set_position(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y + 100.0f, meshes["jupiter"].get_transform().position.z));
 	spots[4].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[4].set_direction(normalize(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y, meshes["jupiter"].get_transform().position.z)));
-	spots[4].set_range(20.0f);
-	spots[4].set_power(0.5f);
+	spots[4].set_range(100.0f);
+	spots[4].set_power(0.9f);
 
 	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
 	// Green, Direction (x of planet, y of planet, z of planet) normalized
@@ -241,7 +241,7 @@ bool load_content() {
 
 
 
-	*/
+	
 
 	//Point light - Set lighting values, Position (-25, 10, -10)
 	light.set_position(vec3(0.0f, 0.0f, 0.0f));
@@ -249,12 +249,15 @@ bool load_content() {
 	light.set_light_colour(vec4(1.0f, 1.0f, 0.5f, 1.0f));
 	//Point light - Set range to 1000
 	light.set_range(1000.0f);
-
+	  
   // Load in shaders 
   eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);   
   eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
   eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
-  //eff.add_shader("shaders/part_spot.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("shaders/part_spot.frag", GL_FRAGMENT_SHADER);
+  //vector<string> frag_shaders{ "shaders/simple_shader.frag", "shaders/part_normal_map.frag",
+	//   "shaders/part_spot.frag" };
+  //eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER); 
   // Build effect
   eff.build();
   //Load in Skybox shaders
@@ -305,7 +308,7 @@ bool update(float delta_time) {
 
 		//Move Camera
 		if (glfwGetKey(renderer::get_window(), '1')) {
-			cam.set_position(vec3(meshes["god"].get_transform().position.x, meshes["god"].get_transform().position.y, meshes["god"].get_transform().position.z));
+			cam.set_position(vec3(spots[4].get_position().x, spots[4].get_position().y, spots[4].get_position().z));
 		}
 		if (glfwGetKey(renderer::get_window(), '2')) {
 			cam.set_position(vec3(-50, 10, 50));
@@ -319,6 +322,46 @@ bool update(float delta_time) {
 	
 
 
+
+		spots[0].set_position(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y + 30.0f, meshes["mercury"].get_transform().position.z));
+		spots[0].set_direction(normalize(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z)));
+		spots[1].set_position(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y + 30.0f, meshes["venus"].get_transform().position.z));
+		spots[1].set_direction(normalize(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y, meshes["venus"].get_transform().position.z)));
+		spots[2].set_position(vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y + 30.0f, meshes["neptune"].get_transform().position.z));
+		spots[2].set_direction(normalize(vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y, meshes["neptune"].get_transform().position.z)));
+		spots[3].set_position(vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y + 30.0f, meshes["mars"].get_transform().position.z));
+		spots[3].set_direction(normalize(vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y, meshes["mars"].get_transform().position.z)));
+		spots[4].set_position(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y + 30.0f, meshes["jupiter"].get_transform().position.z));
+		spots[4].set_direction(normalize(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y, meshes["jupiter"].get_transform().position.z)));
+		spots[5].set_position(vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y + 30.0f, meshes["uranus"].get_transform().position.z));
+		spots[5].set_direction(normalize(vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y, meshes["uranus"].get_transform().position.z)));
+		spots[6].set_position(vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y + 30.0f, meshes["saturn"].get_transform().position.z));
+		spots[6].set_direction(normalize(vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y, meshes["saturn"].get_transform().position.z)));
+		spots[7].set_position(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 30.0f, normal_meshes["earth"].get_transform().position.z));
+		spots[7].set_direction(normalize(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z)));
+
+
+		if (glfwGetKey(renderer::get_window(), 'X')) {
+			spots[0].set_range(40.0f);
+			spots[1].set_range(40.0f);
+			spots[2].set_range(40.0f);
+			spots[3].set_range(40.0f);
+			spots[4].set_range(40.0f);
+			spots[5].set_range(40.0f);
+			spots[6].set_range(40.0f);
+			spots[7].set_range(40.0f);
+		}
+
+		if (glfwGetKey(renderer::get_window(), 'Z')) {
+			spots[0].set_range(0.0f);
+			spots[1].set_range(0.0f);
+			spots[2].set_range(0.0f);
+			spots[3].set_range(0.0f);
+			spots[4].set_range(0.0f);
+			spots[5].set_range(0.0f);
+			spots[6].set_range(0.0f);
+			spots[7].set_range(0.0f);
+		}
 
 
 
@@ -489,7 +532,7 @@ bool update(float delta_time) {
 	}
 	else {
 		skybox.get_transform().position = chcam.get_position();
-	}
+	} 
 
   velocity -= delta_time*(1.0f- exp(1.0))/(1.0f + exp(1.0));  //Equation for elliptical orbit
   moon_velocity -= delta_time;
@@ -561,7 +604,7 @@ void renderMeshes() {
 				 MVP = P * V * M;
 			}
 			// Set MVP matrix uniform
-			glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform
+			glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform 
 				1,                               // Number of values - 1 mat4
 				GL_FALSE,                        // Transpose the matrix?
 				value_ptr(MVP));                 // Pointer to matrix data
@@ -576,8 +619,9 @@ void renderMeshes() {
 			// Bind light
 			renderer::bind(light, "point");
 			// Bind spot lights
-			//renderer::bind(spots[6], "spots");
+			renderer::bind(spots, "spots");
 			// Bind texture
+			//cout <<"++++++++HERE: "<< e.first << endl;
 			renderer::bind(tex[e.first], 0);
 			// Set tex uniform
 			glUniform1i(eff.get_uniform_location("tex"), 0);
@@ -627,9 +671,10 @@ void renderMeshes() {
 			// Bind light
 			renderer::bind(light, "point");
 			// Bind spot lights
-			//renderer::bind(spots, "spots");
+			renderer::bind(spots, "spots");
 			// Bind texture
 			//renderer::bind(tex[e.first], 0);
+			//cout << "++++++++HERE: " << e.first << endl;
 			renderer::bind(tex[e.first], 0);
 			// Set tex uniform
 			glUniform1i(eff.get_uniform_location("tex"), 0);
@@ -683,7 +728,7 @@ void renderNormalMeshes() {
 			// Bind light
 			renderer::bind(light, "point");
 			// Bind spot lights
-			//renderer::bind(spots[7], "spots"); 
+			renderer::bind(spots, "spots"); 
 			// Bind texture
 			renderer::bind(tex[e.first], 0);
 			// Set tex uniform
