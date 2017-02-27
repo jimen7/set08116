@@ -61,6 +61,8 @@ bool load_content() {
 	meshes["uranus"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["neptune"] = mesh(geometry_builder::create_sphere(20, 20));
 
+	meshes["spaceinvader"] = mesh(geometry("models/Space_Invader.obj"));
+
 	meshes["falcon"] = mesh(geometry("models/starwars-millennium-falcon.obj"));
 	meshes["god"] = mesh(geometry("models/hand.OBJ"));
 
@@ -97,6 +99,7 @@ bool load_content() {
 	meshes["falcon"].get_transform().scale = vec3(0.00001f, 0.00001f, 0.00001f);
 	meshes["falcon"].get_transform().translate(vec3(0.0f,50.0f,0.0f));
 	meshes["god"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+	meshes["spaceinvader"].get_transform().scale = vec3(0.001f, 0.001f, 0.001f);
 
 	material mat;
 	// *********************************
@@ -134,6 +137,8 @@ bool load_content() {
 	meshes["uranus"].set_material(mat);
 	meshes["neptune"].set_material(mat);
 
+	meshes["spaceinvader"].set_material(mat);
+
 
 	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	meshes["falcon"].set_material(mat);
@@ -153,6 +158,7 @@ bool load_content() {
 	tex["saturn"] = texture("textures/saturn.jpg"); 
 	tex["uranus"] = texture("textures/uranus.jpg");
 	tex["neptune"] = texture("textures/neptune.jpg");
+	tex["spaceinvader"] = texture("textures/spaceinvader.jpg");
 
 
 	tex["falcon"] = texture("textures/falcon.jpg");
@@ -404,7 +410,7 @@ bool update(float delta_time) {
 		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*35.0f, 0.0f, sin(velocity*3.0f)*35.0f) + meshes["sun"].get_transform().position);		
 		meshes["venus"].get_transform().position = (vec3(cos(velocity*2.0f)*45.0f, 0.0f, sin(velocity*2.0f)*45.0f) + meshes["sun"].get_transform().position);
 		normal_meshes["earth"].get_transform().position = (vec3(cos(velocity)*55.0f, 0.0f, sin(velocity)*55.0f) + meshes["sun"].get_transform().position);
-		meshes["moon"].get_transform().position = (vec3(cos(moon_velocity*3.0f)*3.0f, 0.0f, sin(moon_velocity*3.0f)*3.0f) + normal_meshes["earth"].get_transform().position);
+		meshes["moon"].get_transform().position = (vec3(cos(moon_velocity*2.0f)*3.0f, 0.0f, sin(moon_velocity*3.0f)*2.0f) + normal_meshes["earth"].get_transform().position);
 		meshes["mars"].get_transform().position = (vec3(cos(velocity*0.8f)*65.0f, 0.0f, sin(velocity*0.8f)*65.0f) + meshes["sun"].get_transform().position);
 		meshes["jupiter"].get_transform().position = (vec3(cos(velocity*0.7f)*80.0f, 0.0f, sin(velocity*0.7f)*80.0f) + meshes["sun"].get_transform().position);
 		meshes["saturn"].get_transform().position = (vec3(cos(velocity*0.6f)*95.0f, 0.0f, sin(velocity*0.6f)*95.0f) + meshes["sun"].get_transform().position);
@@ -800,6 +806,37 @@ void renderSun() {
 	// *********************************
 }
 
+void renderspaceinvaderTransformation() {
+	
+	// Bind effect
+	renderer::bind(eff);
+	// Get PV
+	mat4 PV = cam.get_projection() * cam.get_view();
+	if (cambool) {
+	PV = cam.get_projection() * cam.get_view();
+	}
+	else {
+	PV = chcam.get_projection() * chcam.get_view();
+	}
+	// Set the texture value for the shader here
+	glUniform1i(eff.get_uniform_location("tex"), 0);
+	// Find the lcoation for the MVP uniform
+	const auto loc = eff.get_uniform_location("MVP");
+
+	auto M = meshes["spaceinvader"].get_transform().get_transform_matrix();
+
+	// Apply the heirarchy chain
+	M = meshes["sun"].get_transform().get_transform_matrix() * M;
+
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(loc, 1, GL_FALSE, value_ptr(PV * M));
+	// Bind texture to renderer
+	renderer::bind(tex["spaceinvader"], 0);
+	// Render mesh
+	renderer::render(meshes["spaceinvader"]);
+
+}
+
 bool render() {
 
 	renderSkybox();
@@ -809,6 +846,8 @@ bool render() {
 	renderNormalMeshes();
 
 	renderSun();
+
+	renderspaceinvaderTransformation();
 
 
 	return true; 
