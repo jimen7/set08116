@@ -1,4 +1,4 @@
-#version 440
+#version 450 core
 
 // Point light information
 struct point_light {
@@ -34,11 +34,12 @@ struct material {
 vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord_out);
 vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
                     in vec4 tex_colour);
+float calculate_shadow(in sampler2D shadow_map, in vec4 light_space_pos);
 
 // Point light for the scene
 uniform point_light point;
 // Spot lights being used in the scene
-uniform spot_light spots[8];
+uniform spot_light spots[9];
 // Material for the object
 uniform material mat;
 // Eye position
@@ -47,6 +48,8 @@ uniform vec3 eye_pos;
 uniform sampler2D tex;
 // Normal map to sample from
 uniform sampler2D normal_map;
+// Shadow map to sample from
+uniform sampler2D shadow_map;
 
 // Incoming position
 layout(location = 0) in vec3 vertex_position;
@@ -58,12 +61,16 @@ layout(location = 2) in vec3 tex_coord_out1;
 layout(location = 3) in vec3 tangent_out;
 // Incoming binormal
 layout(location = 4) in vec3 binormal_out;
+// Incoming binormal
+layout(location = 5) in vec4 light_space_pos;
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
 
 void main() {
   // *********************************
+    // Calculate shade factor
+  float shade = calculate_shadow(shadow_map,light_space_pos);
   // Get distance between point light and vertex
   float d = distance(point.position, vertex_position);
   // Calculate attenuation factor
@@ -101,9 +108,14 @@ void main() {
   colour.a = 1.0f;
 
     // Sum spot lights
-  for (int i = 0; i < 8; ++i) {
+  for (int i = 0; i < 9; ++i) {
 	colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, sample_texture);
   }
+
+  // Scale colour by shade
+  colour *= shade;
+  //Ensure alpha is 1.0
+  colour.a = 1.0f;
 
   // *********************************
 }
