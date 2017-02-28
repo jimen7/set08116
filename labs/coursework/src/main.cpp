@@ -31,8 +31,7 @@ bool button = true;
 // We could just use the Camera's projection, 
 // but that has a narrower FoV than the cone of the spot light, so we would get clipping.
 // so we have yo create a new Proj Mat with a field of view of 90.
-mat4 LightProjectionMat = perspective<float>(90.f, renderer::get_screen_aspect(), 0.1f, 1000.f);
-
+mat4 LightProjectionMat; 
 //bool plane = false;
 
 
@@ -47,6 +46,7 @@ bool initialise() {
 }
 
 bool load_content() {
+	LightProjectionMat = perspective<float>(half_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.f);
 	// Create shadow map- use screen size
 	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 	// Create box geometry for skybox 
@@ -60,6 +60,7 @@ bool load_content() {
 	cube_map = cubemap(filenames);
 	// Create Sphere
 	meshes["plane"] = mesh(geometry_builder::create_plane());
+	meshes["box"] = mesh(geometry_builder::create_box());
 	meshes["sun"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["mercury"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["venus"] = mesh(geometry_builder::create_sphere(20, 20));
@@ -79,6 +80,8 @@ bool load_content() {
 	//Transform Objects
 	  //meshes["plane"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["plane"].get_transform().translate(vec3(0.0f, -60.0f, 0.0f));
+	meshes["box"].get_transform().translate(vec3(0.0f, -59.0f, 0.0f));
+	meshes["box"].get_transform().scale = vec3(27.1f, 10.1f, 63.0f);
 	meshes["sun"].get_transform().scale = vec3(30.0f, 30.0f, 30.0f);
 	meshes["sun"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
 	meshes["sun"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
@@ -151,6 +154,12 @@ bool load_content() {
 	meshes["spaceinvader"].set_material(mat);
 
 
+	meshes["box"].get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	meshes["box"].get_material().set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	meshes["box"].get_material().set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	meshes["box"].get_material().set_shininess(25.0f);
+
+
 	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	meshes["falcon"].set_material(mat);
 
@@ -159,6 +168,7 @@ bool load_content() {
 
 	// Load texture
 	tex["plane"] = texture("textures/check_1.png");
+	tex["box"] = texture("textures/water.jpg");
 	tex["sun"] = texture("textures/sun.jpg");
 	tex["mercury"] = texture("textures/mercury.jpg");
 	tex["venus"] = texture("textures/venus.jpg");
@@ -259,11 +269,12 @@ bool load_content() {
 	// Spot 8, Position (x of SUN, y of SUn plus 100, z of planet)
 	// Green, Direction (x of planet, y of planet, z of planet) normalized
 	// 20 range,0.5 power
-	spots[8].set_position(vec3(meshes["sun"].get_transform().position.x, meshes["sun"].get_transform().position.y + 100.0f, meshes["sun"].get_transform().position.z));
+	spots[8].set_position(vec3(20.0f, -36.0f, 0.0f));
 	spots[8].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[8].set_direction(normalize(vec3(meshes["sun"].get_transform().position.x, meshes["sun"].get_transform().position.y, meshes["sun"].get_transform().position.z)));
-	spots[8].set_range(20.0f);
-	spots[8].set_power(10.1f);
+	//spots[8].set_direction(normalize(vec3(0, -59.0f, 0.0f) - vec3(20.0f, -36.0f, 0.0f)));
+	spots[8].set_direction(normalize(vec3(meshes["box"].get_transform().position.x, meshes["box"].get_transform().position.y, meshes["box"].get_transform().position.z)));
+	spots[8].set_range(500.0f);
+	spots[8].set_power(10.0f);
 
 
 
@@ -384,7 +395,7 @@ bool update(float delta_time) {
 		spots[5].set_range(40.0f);
 		spots[6].set_range(40.0f);
 		spots[7].set_range(40.0f);
-		spots[8].set_range(500.0f);
+		spots[8].set_range(1000.0f);
 	}
 
 	if (glfwGetKey(renderer::get_window(), 'Z')) {
@@ -428,7 +439,7 @@ bool update(float delta_time) {
 		meshes["plane"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
 
 	}
-	else {
+	if (glfwGetKey(renderer::get_window(), 'H')) {
 		meshes["plane"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
 
@@ -463,6 +474,10 @@ bool update(float delta_time) {
 
 
 	}
+
+	// Press s to save
+	if (glfwGetKey(renderer::get_window(), 'B') == GLFW_PRESS)
+		shadow.buffer->save("test.png");
 
 	meshes["god"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 5.0f, normal_meshes["earth"].get_transform().position.z);
 	//Hand of god
@@ -586,7 +601,10 @@ bool update(float delta_time) {
 
 	// *********************************
 	// Update the shadow map light_position from the spot light
+
 	shadow.light_position = spots[8].get_position();
+	//HARDCODE SPOT DIR
+	spots[8].set_direction(normalize(vec3(meshes["box"].get_transform().position.x, meshes["box"].get_transform().position.y, meshes["box"].get_transform().position.z)));
 	// do the same for light_dir property
 	shadow.light_dir = spots[8].get_direction();
 	// *********************************
@@ -663,6 +681,7 @@ void renderMeshes() {
 			auto LM = m.get_transform().get_transform_matrix();
 			// viewmatrix from the shadow map
 			auto LV = shadow.get_view();
+			//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f));
 			// Multiply together with LightProjectionMat
 			auto lightMVP = LightProjectionMat*LV*LM;
 			// Set uniform
@@ -728,6 +747,7 @@ void renderMeshes() {
 			auto LM = m.get_transform().get_transform_matrix();
 			// viewmatrix from the shadow map
 			auto LV = shadow.get_view();
+			//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f));
 			// Multiply together with LightProjectionMat
 			auto lightMVP = LightProjectionMat*LV*LM;
 			// Set uniform
@@ -934,9 +954,6 @@ void renderShadows() {
 	glCullFace(GL_FRONT);
 	// *********************************
 
-
-
-
 	// Bind shader
 	renderer::bind(shadow_eff);
 
@@ -944,12 +961,15 @@ void renderShadows() {
 	for (auto &e : meshes) {
 		auto m = e.second;
 		// Create MVP matrix
-		auto M = m.get_transform().get_transform_matrix();
+		mat4 M = m.get_transform().get_transform_matrix();
 		// *********************************
 		// View matrix taken from shadow map
-		auto V = shadow.get_view();
+		mat4 V = shadow.get_view();
+		//V = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position , glm::vec3(0.0f, 0.0f, 1.0f));
+	
+
 		// *********************************
-		auto MVP = LightProjectionMat * V * M;
+		mat4 MVP = LightProjectionMat * (V * M);
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(shadow_eff.get_uniform_location("MVP"), // Location of uniform
 			1,                                      // Number of values - 1 mat4
@@ -979,10 +999,6 @@ void renderShadows() {
 		renderer::render(m);
 	}
 
-
-
-
-
 	// *********************************
 	// Set render target back to the screen
 	renderer::set_render_target();
@@ -999,6 +1015,8 @@ void renderShadows() {
 bool render() {
 
 	renderSkybox();
+
+	renderShadows();
 
 	renderMeshes();
 
