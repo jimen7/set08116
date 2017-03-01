@@ -31,7 +31,7 @@ bool button = true;
 // We could just use the Camera's projection, 
 // but that has a narrower FoV than the cone of the spot light, so we would get clipping.
 // so we have yo create a new Proj Mat with a field of view of 90.
-mat4 LightProjectionMat; 
+mat4 LightProjectionMat;
 //bool plane = false;
 
 
@@ -80,8 +80,10 @@ bool load_content() {
 	//Transform Objects
 	  //meshes["plane"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["plane"].get_transform().translate(vec3(0.0f, -60.0f, 0.0f));
+	meshes["plane"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	meshes["box"].get_transform().translate(vec3(0.0f, -59.0f, 0.0f));
-	meshes["box"].get_transform().scale = vec3(27.1f, 10.1f, 63.0f);
+	meshes["box"].get_transform().scale = vec3(2.1f, 2.1f, 2.1f);
+	//meshes["box"].get_transform().scale = vec3(27.1f, 10.1f, 63.0f);
 	meshes["sun"].get_transform().scale = vec3(30.0f, 30.0f, 30.0f);
 	meshes["sun"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
 	meshes["sun"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
@@ -146,8 +148,8 @@ bool load_content() {
 	meshes["venus"].set_material(mat);
 	normal_meshes["earth"].set_material(mat);
 	meshes["mars"].set_material(mat);
-	//meshes["jupiter"].set_material(mat);
-	//meshes["saturn"].set_material(mat);
+	meshes["jupiter"].set_material(mat);
+	meshes["saturn"].set_material(mat);
 	meshes["uranus"].set_material(mat);
 	meshes["neptune"].set_material(mat);
 
@@ -270,6 +272,7 @@ bool load_content() {
 	// Green, Direction (x of planet, y of planet, z of planet) normalized
 	// 20 range,0.5 power
 	spots[8].set_position(vec3(20.0f, -36.0f, 0.0f));
+
 	spots[8].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	//spots[8].set_direction(normalize(vec3(0, -59.0f, 0.0f) - vec3(20.0f, -36.0f, 0.0f)));
 	spots[8].set_direction(normalize(vec3(meshes["box"].get_transform().position.x, meshes["box"].get_transform().position.y, meshes["box"].get_transform().position.z)));
@@ -277,19 +280,16 @@ bool load_content() {
 	spots[8].set_power(10.0f);
 
 
-
-
-
 	//Point light - Set lighting values, Position (-25, 10, -10)
 	light.set_position(vec3(0.0f, 0.0f, 0.0f));
 	//Point light - Light colour white
 	light.set_light_colour(vec4(1.0f, 1.0f, 0.5f, 1.0f));
 	//Point light - Set range to 1000
-	light.set_range(1000.0f); 
-	 
+	light.set_range(1000.0f);
+
 	// Load in shaders 
 	eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);
-	eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER); 
+	eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_spot.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_shadow.frag", GL_FRAGMENT_SHADER);
@@ -299,12 +299,12 @@ bool load_content() {
 	// Build effect
 	eff.build();
 	//Load in Skybox shaders
-	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER); 
+	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
 	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
 	// Build effect
 	sky_eff.build();
 	//Load in Sun shaders
-	sun_eff.add_shader("shaders/sun_shader.vert", GL_VERTEX_SHADER); 
+	sun_eff.add_shader("shaders/sun_shader.vert", GL_VERTEX_SHADER);
 	sun_eff.add_shader("shaders/sun_shader.frag", GL_FRAGMENT_SHADER);
 	sun_eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
 	// Build effect
@@ -319,12 +319,11 @@ bool load_content() {
 	shadow_eff.build();
 
 
-	// Set camera properties
+	// Set free camera properties
 	cam.set_position(vec3(0.0f, 10.0f, 0.0f));
 	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
 	cam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
-
-
+	// Set chase camera properties
 	chcam.set_pos_offset(vec3(0.0f, 0.5f, 2.0f));
 	chcam.set_springiness(0.5f);
 	chcam.move(meshes["falcon"].get_transform().position, eulerAngles(meshes["falcon"].get_transform().orientation));
@@ -336,13 +335,13 @@ bool load_content() {
 
 bool update(float delta_time) {
 
-	//cout << 1 / delta_time << endl;
+	//cout << 1 / delta_time << endl;  //Framerate
 
 	static float range = 100.0f;
 	// The target object
 	static mesh &target_mesh = meshes["falcon"];
 
-
+	//Set the camera boolean
 	if (glfwGetKey(renderer::get_window(), 'I')) {
 		cambool = true;
 	}
@@ -367,7 +366,7 @@ bool update(float delta_time) {
 
 
 
-
+	//Set position of spotlights above the moving Planets
 	spots[0].set_position(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y + 30.0f, meshes["mercury"].get_transform().position.z));
 	spots[0].set_direction(normalize(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z)));
 	spots[1].set_position(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y + 30.0f, meshes["venus"].get_transform().position.z));
@@ -385,7 +384,7 @@ bool update(float delta_time) {
 	spots[7].set_position(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 30.0f, normal_meshes["earth"].get_transform().position.z));
 	spots[7].set_direction(normalize(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z)));
 
-
+	//Turn on Spotlights
 	if (glfwGetKey(renderer::get_window(), 'X')) {
 		spots[0].set_range(40.0f);
 		spots[1].set_range(40.0f);
@@ -396,8 +395,9 @@ bool update(float delta_time) {
 		spots[6].set_range(40.0f);
 		spots[7].set_range(40.0f);
 		spots[8].set_range(1000.0f);
+		spots[8].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	}
-
+	//Turn off Spotlights
 	if (glfwGetKey(renderer::get_window(), 'Z')) {
 		spots[0].set_range(0.0f);
 		spots[1].set_range(0.0f);
@@ -408,11 +408,8 @@ bool update(float delta_time) {
 		spots[6].set_range(0.0f);
 		spots[7].set_range(0.0f);
 		spots[8].set_range(0.0f);
+		spots[8].set_light_colour(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
-
-
-
-
 	// O and P to change point light range
 	if (glfwGetKey(renderer::get_window(), 'P')) {
 		range = range*(1.0f + 2.0f*delta_time);
@@ -421,12 +418,7 @@ bool update(float delta_time) {
 		range = range*(1.0f - 2.0f*delta_time);
 	}
 
-
-	//meshes["plane"].get_transform().position = vec3(0.0f,-60.0f,0.0f);
-
-	//Move Around the Sun
-
-
+	//Set the boolean to true/false to stop the planets
 	if (glfwGetKey(renderer::get_window(), 'L')) {
 		button = true;
 	}
@@ -442,8 +434,7 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'H')) {
 		meshes["plane"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
-
-
+	//Move Around the Sun depending on the button boolean
 	if (button) {
 		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*35.0f, 0.0f, sin(velocity*3.0f)*35.0f) + meshes["sun"].get_transform().position);
 		meshes["venus"].get_transform().position = (vec3(cos(velocity*2.0f)*45.0f, 0.0f, sin(velocity*2.0f)*45.0f) + meshes["sun"].get_transform().position);
@@ -454,9 +445,6 @@ bool update(float delta_time) {
 		meshes["saturn"].get_transform().position = (vec3(cos(velocity*0.6f)*95.0f, 0.0f, sin(velocity*0.6f)*95.0f) + meshes["sun"].get_transform().position);
 		meshes["uranus"].get_transform().position = (vec3(cos(velocity*0.5f)*110.0f, 0.0f, sin(velocity*0.5f)*110.0f) + meshes["sun"].get_transform().position);
 		meshes["neptune"].get_transform().position = (vec3(cos(velocity*0.4f)*125.0f, 0.0f, sin(velocity*0.4f)*125.0f) + meshes["sun"].get_transform().position);
-
-
-		//meshes["god"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
 	else {
 		meshes["mercury"].get_transform().position = vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z);
@@ -468,17 +456,9 @@ bool update(float delta_time) {
 		meshes["saturn"].get_transform().position = vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y, meshes["saturn"].get_transform().position.z);
 		meshes["uranus"].get_transform().position = vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y, meshes["uranus"].get_transform().position.z);
 		meshes["neptune"].get_transform().position = vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y, meshes["neptune"].get_transform().position.z);
-
-
-		//meshes["god"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
-
-
 	}
 
-	// Press s to save
-	if (glfwGetKey(renderer::get_window(), 'B') == GLFW_PRESS)
-		shadow.buffer->save("test.png");
-
+	//Make hand stay above the earth
 	meshes["god"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 5.0f, normal_meshes["earth"].get_transform().position.z);
 	//Hand of god
 	if (glfwGetKey(renderer::get_window(), 'T')) {
@@ -490,9 +470,6 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'Y')) {
 		meshes["god"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
-
-
-
 
 	//Set Range
 	light.set_range(range);
@@ -508,6 +485,8 @@ bool update(float delta_time) {
 	meshes["saturn"].get_transform().rotate(vec3(0.0f, -half_pi<float>() / 0.458, 0.0f) * delta_time);
 	meshes["uranus"].get_transform().rotate(vec3(0.0f, 0.0f, -half_pi<float>() / 0.708f) * delta_time);
 	meshes["neptune"].get_transform().rotate(vec3(0.0f, 0.0f, -half_pi<float>() / 0.666f) * delta_time);
+	//Rotate Box on y axis to show of shadows
+	meshes["box"].get_transform().rotate(vec3(0.0f, -pi<float>(), 0.0f) * delta_time);
 
 	// The ratio of pixels to rotation - remember the fov
 	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
@@ -558,25 +537,25 @@ bool update(float delta_time) {
 		// Use keyboard to rotate target_mesh - QE rotate on y-axis
 		if (glfwGetKey(renderer::get_window(), 'Q')) {
 			//meshes["falcon"].get_transform().rotate(vec3(half_pi<float>(), 0 , 0)*delta_time);
-			meshes["falcon"].get_transform().position.y += 50.0f * delta_time;
+			meshes["falcon"].get_transform().position.y += 25.0f * delta_time;
 		}
 		if (glfwGetKey(renderer::get_window(), 'E')) {
 			//meshes["falcon"].get_transform().rotate(vec3(-half_pi<float>(), 0 , 0)*delta_time);
-			meshes["falcon"].get_transform().position.y -= 50.0f * delta_time;
+			meshes["falcon"].get_transform().position.y -= 25.0f * delta_time;
 		}
 
 		// Use keyboard to move the target_mesh - WSAD
 		if (glfwGetKey(renderer::get_window(), 'W')) {
-			meshes["falcon"].get_transform().position.z += 50.0f * delta_time;
+			meshes["falcon"].get_transform().position.z += 25.0f * delta_time;
 		}
 		if (glfwGetKey(renderer::get_window(), 'S')) {
-			meshes["falcon"].get_transform().position.z -= 50.0f * delta_time;
+			meshes["falcon"].get_transform().position.z -= 25.0f * delta_time;
 		}
 		if (glfwGetKey(renderer::get_window(), 'A')) {
-			meshes["falcon"].get_transform().position.x -= 50.0f * delta_time;
+			meshes["falcon"].get_transform().position.x -= 25.0f * delta_time;
 		}
 		if (glfwGetKey(renderer::get_window(), 'D')) {
-			meshes["falcon"].get_transform().position.x += 50.0f * delta_time;
+			meshes["falcon"].get_transform().position.x += 25.0f * delta_time;
 		}
 
 		chcam.move(meshes["falcon"].get_transform().position, eulerAngles(meshes["falcon"].get_transform().orientation));
@@ -587,7 +566,7 @@ bool update(float delta_time) {
 		cursor_y = current_y;
 
 	}
-	// Set skybox position to camera position (camera in centre of skybox)
+	// Set skybox position to camera position (active camera in centre of skybox)
 	if (cambool) {
 		skybox.get_transform().position = cam.get_position();
 	}
@@ -596,15 +575,12 @@ bool update(float delta_time) {
 	}
 
 	velocity -= delta_time*(1.0f - exp(1.0)) / (1.0f + exp(1.0));  //Equation for elliptical orbit
-	moon_velocity -= delta_time;
+	moon_velocity -= delta_time; //Circular Orbit
 
 
 	// *********************************
 	// Update the shadow map light_position from the spot light
-
 	shadow.light_position = spots[8].get_position();
-	//HARDCODE SPOT DIR
-	spots[8].set_direction(normalize(vec3(meshes["box"].get_transform().position.x, meshes["box"].get_transform().position.y, meshes["box"].get_transform().position.z)));
 	// do the same for light_dir property
 	shadow.light_dir = spots[8].get_direction();
 	// *********************************
@@ -681,7 +657,7 @@ void renderMeshes() {
 			auto LM = m.get_transform().get_transform_matrix();
 			// viewmatrix from the shadow map
 			auto LV = shadow.get_view();
-			//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f));
+			//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f)); //Attempt for planet shadows
 			// Multiply together with LightProjectionMat
 			auto lightMVP = LightProjectionMat*LV*LM;
 			// Set uniform
@@ -721,8 +697,6 @@ void renderMeshes() {
 			glUniform1i(eff.get_uniform_location("shadow_map"), 1);
 			// Render mesh
 			renderer::render(m);
-			//glEnable(GL_DEPTH_TEST);
-			//glDepthMask(GL_TRUE);
 			glEnable(GL_CULL_FACE);
 		}
 		else {
@@ -747,7 +721,7 @@ void renderMeshes() {
 			auto LM = m.get_transform().get_transform_matrix();
 			// viewmatrix from the shadow map
 			auto LV = shadow.get_view();
-			//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f));
+			//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f)); //Attempt for planet shadows
 			// Multiply together with LightProjectionMat
 			auto lightMVP = LightProjectionMat*LV*LM;
 			// Set uniform
@@ -966,7 +940,7 @@ void renderShadows() {
 		// View matrix taken from shadow map
 		mat4 V = shadow.get_view();
 		//V = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position , glm::vec3(0.0f, 0.0f, 1.0f));
-	
+
 
 		// *********************************
 		mat4 MVP = LightProjectionMat * (V * M);
@@ -1024,7 +998,7 @@ bool render() {
 
 	renderSun();
 
-	renderspaceinvaderTransformation();
+	renderspaceinvaderTransformation(); //The Transformation object is inside the sun, so user has to navigate there if he wishes to see it
 
 
 	return true;
