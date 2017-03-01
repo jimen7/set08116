@@ -191,13 +191,17 @@ bool load_content() {
 	// Load brick_normalmap.jpg texture
 	tex_normal_maps["earth"] = texture("textures/4096_normal.jpg");
 
+
+	//Spotlight ranges are all set to 0 because they are going to be used for part 2
+
+
 	// Spot 0, Position (x of planet, y of planet plus 30, z of planet)
 	// Green, Direction (x of planet, y of planet, z of planet) normalized
 	// 20 range,0.5 power
 	spots[0].set_position(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y + 30.0f, meshes["mercury"].get_transform().position.z));
 	spots[0].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[0].set_direction(normalize(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z)));
-	spots[0].set_range(20.0f);
+	spots[0].set_range(0.0f);
 	spots[0].set_power(0.5f);
 
 	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
@@ -206,7 +210,7 @@ bool load_content() {
 	spots[1].set_position(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y + 30.0f, meshes["venus"].get_transform().position.z));
 	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[1].set_direction(normalize(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y, meshes["venus"].get_transform().position.z)));
-	spots[1].set_range(20.0f);
+	spots[1].set_range(0.0f);
 	spots[1].set_power(0.5f);
 
 	// Spot 2, Position (x of planet, y of planet plus 30, z of planet)
@@ -215,7 +219,7 @@ bool load_content() {
 	spots[2].set_position(vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y + 30.0f, meshes["neptune"].get_transform().position.z));
 	spots[2].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[2].set_direction(normalize(vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y, meshes["neptune"].get_transform().position.z)));
-	spots[2].set_range(20.0f);
+	spots[2].set_range(0.0f);
 	spots[2].set_power(0.5f);
 
 
@@ -226,7 +230,7 @@ bool load_content() {
 	spots[3].set_position(vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y + 30.0f, meshes["mars"].get_transform().position.z));
 	spots[3].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[3].set_direction(normalize(vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y, meshes["mars"].get_transform().position.z)));
-	spots[3].set_range(20.0f);
+	spots[3].set_range(0.0f);
 	spots[3].set_power(0.5f);
 
 	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
@@ -235,7 +239,7 @@ bool load_content() {
 	spots[4].set_position(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y + 100.0f, meshes["jupiter"].get_transform().position.z));
 	spots[4].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[4].set_direction(normalize(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y, meshes["jupiter"].get_transform().position.z)));
-	spots[4].set_range(100.0f);
+	spots[4].set_range(0.0f);
 	spots[4].set_power(0.9f);
 
 	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
@@ -244,7 +248,7 @@ bool load_content() {
 	spots[5].set_position(vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y + 30.0f, meshes["uranus"].get_transform().position.z));
 	spots[5].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[5].set_direction(normalize(vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y, meshes["uranus"].get_transform().position.z)));
-	spots[5].set_range(20.0f);
+	spots[5].set_range(0.0f);
 	spots[5].set_power(0.5f);
 
 
@@ -254,7 +258,7 @@ bool load_content() {
 	spots[6].set_position(vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y + 30.0f, meshes["saturn"].get_transform().position.z));
 	spots[6].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[6].set_direction(normalize(vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y, meshes["saturn"].get_transform().position.z)));
-	spots[6].set_range(20.0f);
+	spots[6].set_range(0.0f);
 	spots[6].set_power(0.5f);
 
 
@@ -265,11 +269,11 @@ bool load_content() {
 	spots[7].set_position(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 30.0f, normal_meshes["earth"].get_transform().position.z));
 	spots[7].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[7].set_direction(normalize(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z)));
-	spots[7].set_range(20.0f);
+	spots[7].set_range(0.0f);
 	spots[7].set_power(0.5f);
 
-	// Spot 8, Position (x of SUN, y of SUn plus 100, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
+	// Spot 8, Position (x of box plus 20, y of box plus 23, z of box)
+	// Green, Direction (x of box, y of box, z of box) normalized    
 	// 20 range,0.5 power
 	spots[8].set_position(vec3(20.0f, -36.0f, 0.0f));
 
