@@ -1,3 +1,6 @@
+#version 440 core
+
+
 // Model transformation matrix
 uniform mat4 M;
 

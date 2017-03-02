@@ -1,4 +1,4 @@
-#version 450 core
+#version 440 core
 
 // The model matrix
 uniform mat4 M;
@@ -31,9 +31,10 @@ layout(location = 3) out vec3 tangent_out;
 // Outgoing binormal
 layout(location = 4) out vec3 binormal_out;
 // Outgoing position in light space
-layout (location = 5) out vec4 light_space_pos;
+layout (location = 7) out vec4 light_space_pos2;
 
 void main() {
+	
   // Set position
   gl_Position = MVP * vec4(position, 1);
   // *********************************
@@ -42,12 +43,12 @@ void main() {
   transformed_normal = N * normal;
   tex_coord_out1 = vec3(tex_coord_in,0.0f);
   // *********************************
-    // Transform tangent
+   // Transform tangent
   tangent_out = N * tangent;
   // Transform binormal
   binormal_out = N * binormal;
-  // *********************************
-      // Transform position into light space
-	light_space_pos = lightMVP * vec4(position, 1.0);
-    // *********************************
+// *********************************
+  // Transform position into light space
+  light_space_pos2 = lightMVP * vec4(position, 1.0);
+// *********************************
 }

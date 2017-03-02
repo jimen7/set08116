@@ -74,7 +74,7 @@ bool load_content() {
 
 	meshes["spaceinvader"] = mesh(geometry("models/Space_Invader.obj"));
 
-	meshes["falcon"] = mesh(geometry("models/starwars-millennium-falcon.obj"));
+	meshes["falcon"] = mesh(geometry("models/starwars-millennium-falcon.obj")); 
 	meshes["god"] = mesh(geometry("models/hand.OBJ"));
 
 	//Transform Objects
@@ -293,15 +293,25 @@ bool load_content() {
 
 	// Load in shaders 
 	eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);
+	/*
+	std::vector<std::string> vf = std::vector<std::string>{ "shaders/simple_shader.frag",
+		"shaders/part_normal_map.frag",
+		"shaders/part_spot.frag",
+		"shaders/part_shadow.frag" };
+	eff.add_shader(vf, GL_FRAGMENT_SHADER);
+	*/
+	
 	eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_spot.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_shadow.frag", GL_FRAGMENT_SHADER);
+	
 	//vector<string> frag_shaders{ "shaders/simple_shader.frag", "shaders/part_normal_map.frag",
 	  //   "shaders/part_spot.frag" };
 	//eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER); 
 	// Build effect
 	eff.build();
+	 
 	//Load in Skybox shaders
 	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
 	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
@@ -339,7 +349,7 @@ bool load_content() {
 
 bool update(float delta_time) {
 
-	//cout << 1 / delta_time << endl;  //Framerate
+	cout << 1 / delta_time << endl;  //Framerate
 
 	static float range = 100.0f;
 	// The target object
@@ -551,7 +561,7 @@ bool update(float delta_time) {
 		// Use keyboard to move the target_mesh - WSAD
 		if (glfwGetKey(renderer::get_window(), 'W')) {
 			meshes["falcon"].get_transform().position.z += 25.0f * delta_time;
-		}
+		} 
 		if (glfwGetKey(renderer::get_window(), 'S')) {
 			meshes["falcon"].get_transform().position.z -= 25.0f * delta_time;
 		}

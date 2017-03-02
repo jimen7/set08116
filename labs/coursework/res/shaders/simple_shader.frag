@@ -1,4 +1,4 @@
-#version 450 core
+#version 440 core
 
 // Point light information
 struct point_light {
@@ -34,7 +34,7 @@ struct material {
 vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord_out);
 vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
                     in vec4 tex_colour);
-float calculate_shadow(in sampler2D shadow_map, in vec4 light_space_pos);
+float calculate_shadow(in sampler2D shadow_map, in vec4 light_space_pos5);
 
 // Point light for the scene
 uniform point_light point;
@@ -61,8 +61,8 @@ layout(location = 2) in vec3 tex_coord_out1;
 layout(location = 3) in vec3 tangent_out;
 // Incoming binormal
 layout(location = 4) in vec3 binormal_out;
-// Incoming binormal
-layout(location = 5) in vec4 light_space_pos;
+// Incoming light space position
+layout(location = 7) in vec4 light_space_pos2;
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
@@ -70,7 +70,7 @@ layout(location = 0) out vec4 colour;
 void main() {
   // *********************************
     // Calculate shade factor
-  float shade = calculate_shadow(shadow_map,light_space_pos);
+  float shade = calculate_shadow(shadow_map,light_space_pos2);
   // Get distance between point light and vertex
   float d = distance(point.position, vertex_position);
   // Calculate attenuation factor
@@ -116,6 +116,5 @@ void main() {
   colour *= shade;
   //Ensure alpha is 1.0
   colour.a = 1.0f;
-
   // *********************************
 }

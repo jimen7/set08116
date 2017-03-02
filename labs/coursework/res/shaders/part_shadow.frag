@@ -1,9 +1,10 @@
-#version 450 core
+#version 440 core
+
 
 // Calculates the shadow factor of a vertex
-float calculate_shadow(in sampler2D shadow_map, in vec4 light_space_pos) {
+float calculate_shadow(in sampler2D shadow_map, in vec4 light_space_pos5) {
   // Get light screen space coordinate
-  vec3 proj_coords = light_space_pos.xyz / light_space_pos.w;
+  vec3 proj_coords = light_space_pos5.xyz / light_space_pos5.w;
   // Use this to calculate texture coordinates for shadow map
   vec2 shadow_tex_coords;
   // This is a bias calculation to convert to texture space
