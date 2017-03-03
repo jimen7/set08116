@@ -369,7 +369,7 @@ bool update(float delta_time) {
 		cam.set_position(vec3(spots[8].get_position().x, spots[8].get_position().y, spots[8].get_position().z));
 	}
 	if (glfwGetKey(renderer::get_window(), '2')) {
-		cam.set_position(vec3(-50, 10, 50));
+		cam.set_position(meshes["jupiter"].get_transform().position);
 	}
 	if (glfwGetKey(renderer::get_window(), '3')) {
 		cam.set_position(vec3(-50, 10, -50));
@@ -450,7 +450,7 @@ bool update(float delta_time) {
 	}
 	//Move Around the Sun depending on the button boolean
 	if (button) {
-		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*35.0f, 0.0f, sin(velocity*3.0f)*35.0f) + meshes["sun"].get_transform().position);
+		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*35.0f, 0.0f, sin(velocity*3.0f)*35.0f) + meshes["sun"].get_transform().position); 
 		meshes["venus"].get_transform().position = (vec3(cos(velocity*2.0f)*45.0f, 0.0f, sin(velocity*2.0f)*45.0f) + meshes["sun"].get_transform().position);
 		normal_meshes["earth"].get_transform().position = (vec3(cos(velocity)*55.0f, 0.0f, sin(velocity)*55.0f) + meshes["sun"].get_transform().position);
 		meshes["moon"].get_transform().position = (vec3(cos(moon_velocity*2.0f)*3.0f, 0.0f, sin(moon_velocity*3.0f)*2.0f) + normal_meshes["earth"].get_transform().position);
@@ -478,9 +478,7 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'T')) {
 		meshes["god"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
 	}
-	else {
-		meshes["god"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
-	}
+
 	if (glfwGetKey(renderer::get_window(), 'Y')) {
 		meshes["god"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
@@ -588,7 +586,7 @@ bool update(float delta_time) {
 		skybox.get_transform().position = chcam.get_position();
 	}
 
-	velocity -= delta_time*(1.0f - exp(1.0)) / (1.0f + exp(1.0));  //Equation for elliptical orbit
+	velocity -= (delta_time*(1.0f - exp(1.0)) / (1.0f + exp(1.0)));  //Equation for elliptical orbit
 	moon_velocity -= delta_time; //Circular Orbit
 
 
@@ -902,7 +900,7 @@ void renderSun() {
 	// *********************************
 }
 
-void renderspaceinvaderTransformation() {
+void renderspaceinvaderTransformation() {    //Transform Hierarchy
 
 	// Bind effect
 	renderer::bind(eff);
