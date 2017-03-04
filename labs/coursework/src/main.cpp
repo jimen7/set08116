@@ -1,3 +1,10 @@
+//Author Name: Dimitrios Tsolis
+//Matriculation Number: 40204497
+//Date Last Modified: 03/04/2017
+//The purpose of this coursework is to create a Solar Systm using OpenGL and C++
+
+
+
 #include <glm\glm.hpp>
 #include <graphics_framework.h>
 
@@ -361,21 +368,6 @@ bool update(float delta_time) {
 	}
 	if (glfwGetKey(renderer::get_window(), 'U')) {
 		cambool = false;
-	}
-
-
-	//Move Camera
-	if (glfwGetKey(renderer::get_window(), '1')) {
-		cam.set_position(vec3(spots[8].get_position().x, spots[8].get_position().y, spots[8].get_position().z));
-	}
-	if (glfwGetKey(renderer::get_window(), '2')) {
-		cam.set_position(meshes["jupiter"].get_transform().position);
-	}
-	if (glfwGetKey(renderer::get_window(), '3')) {
-		cam.set_position(vec3(-50, 10, -50));
-	}
-	if (glfwGetKey(renderer::get_window(), '4')) {
-		cam.set_position(vec3(50, 10, -50));
 	}
 
 
