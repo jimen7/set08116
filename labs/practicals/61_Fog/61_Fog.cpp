@@ -18,7 +18,7 @@ directional_light light;
 
 bool load_content() {
   // Create plane mesh
-  meshes["plane"] = mesh(geometry_builder::create_plane());
+  meshes["plane"] = mesh(geometry_builder::create_plane()); 
 
   // Create scene
   meshes["box"] = mesh(geometry_builder::create_box());
@@ -97,7 +97,7 @@ bool load_content() {
   // Load in shaders
   eff.add_shader("61_Fog/shader.vert", GL_VERTEX_SHADER);
   eff.add_shader("61_Fog/shader.frag", GL_FRAGMENT_SHADER);
-  eff.add_shader("shaders/part_direction.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("shaders/part_direction.frag", GL_FRAGMENT_SHADER);   
   eff.add_shader("61_Fog/part_fog.frag", GL_FRAGMENT_SHADER);
   // Build effect
   eff.build();
@@ -165,15 +165,15 @@ bool render() {
 
     // *********************************
     // Set fog colour to the same as the clear colour
-
-    // Set fog start:  5.0f
-
-    // Set fog end:  100.0f
-
-    // Set fog density: 0.04f
-
-    // Set fog type: FOG_EXP2
-
+	glUniform4fv(eff.get_uniform_location("fog_colour"), 1, value_ptr(vec4(0.5f, 0.5f, 0.5f, 1.0f)));
+	// Set fog start:  5.0f
+	glUniform1f(eff.get_uniform_location("fog_start"), 5.0f);
+	// Set fog end:  100.0f
+	glUniform1f(eff.get_uniform_location("fog_end"), 100.0f);
+	// Set fog density: 0.04f
+	glUniform1f(eff.get_uniform_location("fog_density"), 0.04f);
+	// Set fog type: FOG_EXP2
+	glUniform1i(eff.get_uniform_location("fog_type"), 2);
     // *********************************
 
     // Render mesh
