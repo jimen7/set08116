@@ -69,9 +69,9 @@ bool render() {
   // Set MVP matrix uniform
 	glUniformMatrix4fv(sky_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Bind cubemap to TU 0
-	renderer::bind(cube_map, 1);
+	renderer::bind(cube_map, 0);
   // Set cubemap uniform
-	glUniform1i(sky_eff.get_uniform_location("cubemap"), 1);
+	glUniform1i(sky_eff.get_uniform_location("cubemap"), 0); 
   // Render skybox
 	renderer::render(skybox);
   // Enable depth test and depth mask
