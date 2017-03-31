@@ -392,14 +392,14 @@ bool update(float delta_time) {
 
 	//Turn on Spotlights
 	if (glfwGetKey(renderer::get_window(), 'X')) {
-		spots[0].set_range(40.0f);
-		spots[1].set_range(40.0f);
-		spots[2].set_range(40.0f);
-		spots[3].set_range(40.0f);
-		spots[4].set_range(40.0f);
-		spots[5].set_range(40.0f);
-		spots[6].set_range(40.0f);
-		spots[7].set_range(40.0f);
+		//spots[0].set_range(40.0f);
+		//spots[1].set_range(40.0f);
+		//spots[2].set_range(40.0f);
+		//spots[3].set_range(40.0f);
+		//spots[4].set_range(40.0f);
+		//spots[5].set_range(40.0f);
+		//spots[6].set_range(40.0f);
+		//spots[7].set_range(40.0f);
 		spots[8].set_range(1000.0f);
 		spots[8].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	}
@@ -416,6 +416,14 @@ bool update(float delta_time) {
 		spots[8].set_range(0.0f);
 		spots[8].set_light_colour(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
+
+
+	// Press s to save
+	if (glfwGetKey(renderer::get_window(), 'J') == GLFW_PRESS) {
+		shadow.buffer->save("test.png");
+	}
+
+
 	// O and P to change point light range
 	if (glfwGetKey(renderer::get_window(), 'P')) {
 		range = range*(1.0f + 2.0f*delta_time);

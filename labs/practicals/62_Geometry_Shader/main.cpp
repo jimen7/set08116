@@ -11,7 +11,7 @@ target_camera cam;
 
 bool load_content()
 {
-    geom.set_type(GL_TRIANGLE_STRIP);
+    geom.set_type(GL_TRIANGLE_STRIP); 
     // Positions
     vector<vec3> positions
     {
