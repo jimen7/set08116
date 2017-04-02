@@ -135,12 +135,12 @@ bool render() {
     // Bind effect
     renderer::bind(debug_eff);
     // Create MVP matrix
-    auto M = m.get_transform().get_transform_matrix();
+    auto M = m.get_transform().get_transform_matrix();  
     auto V = cam.get_view();
     auto P = cam.get_projection();
     auto MVP = P * V * M;
     // Set MVP matrix uniform
-    glUniformMatrix4fv(debug_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+    glUniformMatrix4fv(debug_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));  
 
     // Render mesh
     renderer::render(m);
@@ -186,7 +186,7 @@ bool render() {
 
 void main() {
   // Create application
-  app application("64_Showing_Normals");
+  app application("64_Showing_Normals"); 
   // Set load content, update and render methods
   application.set_load_content(load_content);
   application.set_update(update);
