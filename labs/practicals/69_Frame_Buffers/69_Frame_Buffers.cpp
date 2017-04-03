@@ -211,7 +211,7 @@ bool render() {
   auto M = render_cube.get_transform().get_transform_matrix();
   // get V and P from Cam 2
   auto V = cam2.get_view();
-  auto P = cam2.get_projection();
+  auto P = cam2.get_projection()*mat4(-1.0f);
   // Build MVP
   auto MVP = P * V * M;
   // Set MVP matrix uniform

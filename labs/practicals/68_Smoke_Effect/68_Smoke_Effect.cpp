@@ -60,7 +60,7 @@ bool load_content() {
   // Bind as GL_SHADER_STORAGE_BUFFER
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Velocity_buffer);
   // Send Data to GPU, use GL_DYNAMIC_DRAW
-  glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, positions, GL_DYNAMIC_DRAW);
+  glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, velocitys, GL_DYNAMIC_DRAW);
   // *********************************
    //Unbind
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
