@@ -23,12 +23,12 @@ void main() {
   vec3 new_pos = position[0] + velocity[0] * delta_time;
   // *********************************
   // Ensure particle does not go out of bounds - if y > 5 set y to 0
-  if (new_pos.y>5)
-	new_pos.y=0
+  if (new_pos.y>10)
+	new_pos.y=0;
 
 
   // Output data
-  position_out=new_position;
+  position_out = new_pos;
   velocity_out=velocity[0];
   // Emit vertex and end primitive
   EmitVertex();

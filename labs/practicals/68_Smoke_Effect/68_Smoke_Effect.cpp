@@ -49,18 +49,18 @@ bool load_content() {
   glBindVertexArray(vao);
   // *********************************
    //Generate Position Data buffer
-
+  glGenBuffers(1, &G_Position_buffer);
   // Bind as GL_SHADER_STORAGE_BUFFER
-
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Position_buffer);
   // Send Data to GPU, use GL_DYNAMIC_DRAW
-
+  glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, positions, GL_DYNAMIC_DRAW);
 
   // Generate Velocity Data buffer
-
+  glGenBuffers(1, &G_Velocity_buffer);
   // Bind as GL_SHADER_STORAGE_BUFFER
-
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Velocity_buffer);
   // Send Data to GPU, use GL_DYNAMIC_DRAW
-
+  glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, positions, GL_DYNAMIC_DRAW);
   // *********************************
    //Unbind
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -99,7 +99,7 @@ bool update(float delta_time) {
   delta_y *= ratio_height;
 
   // Rotate cameras by delta
-  cam.rotate(delta_y, delta_x);
+  cam.rotate(delta_y, delta_x); 
 
   // Use UP and DOWN to change camera distance
   if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP)) {
@@ -132,21 +132,22 @@ bool render() {
 
   // *********************************
   // Bind render effect
-
+  renderer::bind(eff);
   // Create MV matrix
-
-
-
+  mat4 M(1.0f);
+  auto V = cam.get_view();
+  auto P = cam.get_projection();
+  auto MV = M * V;
   // Set the colour uniform
-
+  glUniform4fv(eff.get_uniform_location("colour"), 1, value_ptr(vec4(1.0f)));
   // Set MV, and P matrix uniforms seperatly
-
-
+  glUniformMatrix4fv(eff.get_uniform_location("MV"), 1, GL_FALSE, value_ptr(V));
+  glUniformMatrix4fv(eff.get_uniform_location("P"), 1, GL_FALSE, value_ptr(P));
   // Set point_size size uniform to .1f
-
+  glUniform1f(eff.get_uniform_location("point_size"), 0.1f);
   // Bind particle texture
-
-
+  renderer::bind(tex, 0);
+  glUniform1i(eff.get_uniform_location("tex"), 0);
   // *********************************
 
   // Bind position buffer as GL_ARRAY_BUFFER

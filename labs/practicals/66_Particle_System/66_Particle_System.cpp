@@ -47,8 +47,8 @@ bool load_content() {
 
   // Initilise particles
   for (unsigned int i = 0; i < MAX_PARTICLES; ++i) {
-    particles[i].position = vec3(((10.0f * dist(rand)) - 5.0f), 0.0f, 0.0f);
-    particles[i].velocity = vec3(0.0f, 0.1f + dist(rand), 0.0f);
+    particles[i].position = vec3(((10.0f * dist(rand)) - 5.0f), 0.0f, 0.0f); 
+    particles[i].velocity = vec3(0.0f, 0.5f + dist(rand), 0.0f);
   }
 
   // Build effects
@@ -149,7 +149,7 @@ void render_feeback() {
   glEndTransformFeedback();
 
   // reenable output
-  glDisable(GL_RASTERIZER_DISCARD);
+  glDisable(GL_RASTERIZER_DISCARD); 
 }
 
 bool render() {
@@ -162,7 +162,7 @@ bool render() {
   auto V = cam.get_view();
   auto P = cam.get_projection();
   auto MVP = P * V * M;
-  glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+  glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP)); 
   // Set the colour uniform
   glUniform4fv(eff.get_uniform_location("colour"), 1, value_ptr(vec4(1.0f)));
 
@@ -178,9 +178,11 @@ bool render() {
   glDisableVertexAttribArray(0);
 
   // *********************************
+ // glBindBuffer(GL_ARRAY_BUFFER,particle_buffers_vbo[back_buf]);
   // Swap front and back buffers
   front_buf = back_buf;
-  back_buf = (front_buf + 1) % 2;
+  //back_buf = (front_buf + 1) % 2;
+  back_buf = (back_buf + 1) % 2;
   // *********************************
   return true;
 }
