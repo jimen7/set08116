@@ -141,6 +141,9 @@ bool update(float delta_time) {
   return true;
 }
 
+
+
+
 bool render() {
   // *********************************
   // Set render target to frame buffer

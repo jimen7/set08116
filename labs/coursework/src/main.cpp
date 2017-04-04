@@ -12,6 +12,8 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
+
+bool motionblurbool = false;
 map<string, mesh> meshes;
 map<string, mesh> normal_meshes;
 mesh skybox;
@@ -35,6 +37,13 @@ float velocity;
 float moon_velocity;
 bool button = true;
 
+effect tex_eff;
+effect motion_blur;
+frame_buffer frames[2];
+frame_buffer temp_frame;
+unsigned int current_frame = 0;
+geometry screen_quad;
+
 // We could just use the Camera's projection, 
 // but that has a narrower FoV than the cone of the spot light, so we would get clipping.
 // so we have yo create a new Proj Mat with a field of view of 90.
@@ -53,6 +62,22 @@ bool initialise() {
 }
 
 bool load_content() {
+	// *********************************
+	// Create 2 frame buffers - use screen width and height
+	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	// Create a temp framebuffer
+	temp_frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	// Create screen quad
+	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f),
+		vec3(1.0f, 1.0f, 0.0f) };
+	vector<vec2> tex_coords{ vec2(0.0, 0.0), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f) };
+	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	screen_quad.set_type(GL_TRIANGLE_STRIP);
+	// *********************************
+
+	//Light Projection Matrix
 	LightProjectionMat = perspective<float>(half_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.f);
 	// Create shadow map- use screen size
 	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
@@ -299,7 +324,7 @@ bool load_content() {
 	light.set_range(1000.0f);
 
 	// Load in shaders 
-	eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);
+	
 	/*
 	std::vector<std::string> vf = std::vector<std::string>{ "shaders/simple_shader.frag",
 		"shaders/part_normal_map.frag",
@@ -307,7 +332,7 @@ bool load_content() {
 		"shaders/part_shadow.frag" };
 	eff.add_shader(vf, GL_FRAGMENT_SHADER);
 	*/
-	
+	eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);
 	eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_spot.frag", GL_FRAGMENT_SHADER);
@@ -318,10 +343,23 @@ bool load_content() {
 	//eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER); 
 	// Build effect
 	eff.build();
+
+	//Load in motion blur shaders
+	motion_blur.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
+	motion_blur.add_shader("shaders/motion_blur.frag", GL_FRAGMENT_SHADER);
+	//Build effect
+	motion_blur.build();
+
+	//Load in tex_effect shaders
+	tex_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
+	tex_eff.add_shader("shaders/simple_texture.frag", GL_FRAGMENT_SHADER);
 	 
 	//Load in Skybox shaders
 	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
 	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
+	//Build effect
+	tex_eff.build();
+
 	// Build effect
 	sky_eff.build();
 	//Load in Sun shaders
@@ -356,7 +394,9 @@ bool load_content() {
 
 bool update(float delta_time) {
 
-	cout << 1 / delta_time << endl;  //Framerate
+	current_frame = (current_frame + 1) % 2;
+
+	//cout << 1 / delta_time << endl;  //Framerate
 
 	static float range = 100.0f;
 	// The target object
@@ -369,6 +409,16 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'U')) {
 		cambool = false;
 	}
+
+	//Set the motion blur boolean
+	if (glfwGetKey(renderer::get_window(), 'B')) {
+		motionblurbool = true;
+	}
+	if (glfwGetKey(renderer::get_window(), 'V')) {
+		motionblurbool = false;
+	}
+
+
 
 
 
@@ -634,6 +684,8 @@ void renderSkybox() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
+
+
 	// *********************************
 }
 
@@ -778,10 +830,13 @@ void renderMeshes() {
 		}
 	}
 
+
 }
 
 
 void renderNormalMeshes() {
+
+
 	for (auto &e : normal_meshes) {
 		auto m = e.second;
 		// Bind effect
@@ -849,9 +904,11 @@ void renderNormalMeshes() {
 		// *********************************
 	}
 
+
 }
 
 void renderSun() {
+	
 	auto m = meshes["sun"];
 	// Bind effect
 	renderer::bind(sun_eff);
@@ -898,6 +955,8 @@ void renderSun() {
 	// Render mesh
 	renderer::render(m);
 	// *********************************
+
+
 }
 
 void renderspaceinvaderTransformation() {    //Transform Hierarchy
@@ -932,6 +991,8 @@ void renderspaceinvaderTransformation() {    //Transform Hierarchy
 }
 
 void renderShadows() {
+
+
 	// Set render target to shadow map
 	renderer::set_render_target(shadow);
 	// Clear depth buffer bit
@@ -994,11 +1055,23 @@ void renderShadows() {
 
 	// Bind shader
 	renderer::bind(eff);
-
-
 }
 
 bool render() {
+
+	if (motionblurbool) {
+		if (cambool) {
+		}
+		else {
+			// !!!!!!!!!!!!!!! FIRST PASS !!!!!!!!!!!!!!!!
+			// *********************************
+			// Set render target to temp frame
+			renderer::set_render_target(temp_frame);
+			// Clear frame
+			renderer::clear();
+			// *********************************
+		}
+	}
 
 	renderSkybox();
 
@@ -1011,6 +1084,54 @@ bool render() {
 	renderSun();
 
 	renderspaceinvaderTransformation(); //The Transformation object is inside the sun, so user has to navigate there if he wishes to see it
+
+	if (motionblurbool) {
+		if (cambool) {
+		}
+		else {
+			// !!!!!!!!!!!!!!! SECOND PASS !!!!!!!!!!!!!!!!
+			// *********************************
+			// Set render target to current frame
+			renderer::set_render_target(frames[current_frame]);
+			// Clear frame
+			renderer::clear();
+			// Bind motion blur effect
+			renderer::bind(motion_blur);
+			// MVP is now the identity matrix
+			auto MVP = mat4(1.0f);
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(motion_blur.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+			// Bind tempframe to TU 0.
+			renderer::bind(temp_frame.get_frame(), 0);
+			// Bind frames[(current_frame + 1) % 2] to TU 1.
+			renderer::bind(frames[(current_frame + 1) % 2].get_frame(), 1);
+			// Set tex uniforms
+			glUniform1i(motion_blur.get_uniform_location("tex"), 0);
+			glUniform1i(motion_blur.get_uniform_location("previous_frame"), 1);
+			// Set blend factor (0.9f)
+			glUniform1f(motion_blur.get_uniform_location("blend_factor"), 0.9f);
+			// Render screen quad
+			renderer::render(screen_quad);
+
+			// !!!!!!!!!!!!!!! SCREEN PASS !!!!!!!!!!!!!!!!
+
+			// Set render target back to the screen
+			renderer::set_render_target();
+			renderer::bind(tex_eff);
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+			// Bind texture from frame buffer
+			renderer::bind(frames[current_frame].get_frame(), 0);
+			// Set the uniform
+			glUniform1i(tex_eff.get_uniform_location("tex"), 0);
+			// Render the screen quad
+			renderer::render(screen_quad);
+			// *********************************
+		}
+	}
+
+
+
 
 
 	return true;
