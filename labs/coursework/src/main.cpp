@@ -1073,6 +1073,8 @@ bool render() {
 		}
 	}
 
+	renderspaceinvaderTransformation(); //The Transformation object is inside the sun, so user has to navigate there if he wishes to see it
+
 	renderSkybox();
 
 	renderShadows();
@@ -1083,7 +1085,7 @@ bool render() {
 
 	renderSun();
 
-	renderspaceinvaderTransformation(); //The Transformation object is inside the sun, so user has to navigate there if he wishes to see it
+	
 
 	if (motionblurbool) {
 		if (cambool) {
