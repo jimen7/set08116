@@ -33,6 +33,7 @@ layout(location = 0) in vec2 tex_coord;
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
+layout(location = 1) out vec4 darkcolour;
 
 void main() {
   // *********************************
@@ -78,5 +79,7 @@ void main() {
   // Ensure alpha is 1.0
   colour = start_colour;
   colour.a = 1.0;
+
+
   // *********************************
 }

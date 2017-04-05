@@ -57,6 +57,11 @@ bool load_content() {
   meshes["torus"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 
   // Set materials
+  //Black PLane
+  meshes["plane"].get_material().set_emissive(vec4(0.1f, 0.0f, 0.0f, 1.0f));
+  meshes["plane"].get_material().set_diffuse(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  meshes["plane"].get_material().set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  meshes["plane"].get_material().set_shininess(25.0f);
   // Red box
   meshes["box"].get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
   meshes["box"].get_material().set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -104,7 +109,7 @@ bool load_content() {
   // Load in shaders
   eff.add_shader("48_Phong_Shading/phong.vert", GL_VERTEX_SHADER);
   eff.add_shader("48_Phong_Shading/phong.frag", GL_FRAGMENT_SHADER);
-  tex_eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
+  tex_eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER); 
   tex_eff.add_shader("72_Blur/blur.frag", GL_FRAGMENT_SHADER);
   // Build effects
   eff.build();
@@ -184,7 +189,7 @@ bool render() {
     glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
 
     // Render mesh
-    renderer::render(m);
+    renderer::render(m);  
   }
 
   // *********************************

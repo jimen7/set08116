@@ -33,6 +33,7 @@ layout(location = 2) in vec2 tex_coord_in;
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
+layout(location = 1) out vec4 darkcolour;
 
 void main() {
 
@@ -55,8 +56,12 @@ void main() {
   vec4 sample_texture = texture(tex,tex_coord_in);
   // Calculate primary colour component
   vec4 primary = mat.emissive + ambient + diffuse;
+
+  float brightness = dot(sample_texture.xyz, vec3(0.2126, 0.7152, 0.0722))
+	
   // Calculate final colour - remember alpha
   primary.a = 1.0f;
-  colour = primary * sample_texture+specular;
+  if(brightness > 1.0)
+	 colour = primary * sample_texture+specular;
   // *********************************
 }

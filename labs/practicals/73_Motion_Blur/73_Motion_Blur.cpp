@@ -80,7 +80,7 @@ bool load_content() {
 
   // Set materials
   // Red box
-  meshes["box"].get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  meshes["box"].get_material().set_emissive(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   meshes["box"].get_material().set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
   meshes["box"].get_material().set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   meshes["box"].get_material().set_shininess(25.0f);

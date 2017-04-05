@@ -28,14 +28,15 @@ bool cambool = true;
 double cursor_x;
 double cursor_y;
 map<string, texture> tex;
-map<string, texture> tex_normal_maps;
+map<string, texture> tex_normal_maps; 
 point_light light;
 cubemap cube_map;
 vector<spot_light> spots(9);
 shadow_map shadow;
 float velocity;
 float moon_velocity;
-bool button = true;
+bool planetmovement = true;
+
 
 effect tex_eff;
 effect motion_blur;
@@ -90,6 +91,7 @@ bool load_content() {
 		"textures/Stars/purplenebula_dn.png", "textures/Stars/purplenebula_rt.png", "textures/Stars/purplenebula_lf.png" };
 	// Create cube_map
 	cube_map = cubemap(filenames);
+
 	// Create Sphere
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 	meshes["box"] = mesh(geometry_builder::create_box());
@@ -484,10 +486,10 @@ bool update(float delta_time) {
 
 	//Set the boolean to true/false to stop the planets
 	if (glfwGetKey(renderer::get_window(), 'L')) {
-		button = true;
+		planetmovement = true;
 	}
 	if (glfwGetKey(renderer::get_window(), 'K')) {
-		button = false;
+		planetmovement = false;
 	}
 
 
@@ -498,8 +500,8 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'H')) {
 		meshes["plane"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
-	//Move Around the Sun depending on the button boolean
-	if (button) {
+	//Move Around the Sun depending on the planetmovement boolean
+	if (planetmovement) {
 		meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*35.0f, 0.0f, sin(velocity*3.0f)*35.0f) + meshes["sun"].get_transform().position); 
 		meshes["venus"].get_transform().position = (vec3(cos(velocity*2.0f)*45.0f, 0.0f, sin(velocity*2.0f)*45.0f) + meshes["sun"].get_transform().position);
 		normal_meshes["earth"].get_transform().position = (vec3(cos(velocity)*55.0f, 0.0f, sin(velocity)*55.0f) + meshes["sun"].get_transform().position);
@@ -532,6 +534,9 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'Y')) {
 		meshes["god"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	}
+
+	//Rotate skybox
+	skybox.get_transform().rotate(vec3(0.0f,-delta_time/18.0f,0.0f));
 
 	//Set Range
 	light.set_range(range);
@@ -1077,14 +1082,13 @@ bool render() {
 
 	renderSkybox();
 
-	renderShadows();
-
 	renderMeshes();
 
 	renderNormalMeshes();
 
 	renderSun();
 
+	renderShadows();
 	
 
 	if (motionblurbool) {
@@ -1130,6 +1134,10 @@ bool render() {
 			renderer::render(screen_quad);
 			// *********************************
 		}
+
+		
+
+
 	}
 
 
