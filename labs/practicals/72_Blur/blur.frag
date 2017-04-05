@@ -54,7 +54,7 @@ void main() {
 	}
    */
 
-   for (int i = 0; i < 7; i++)
+  /* for (int i = 0; i < 7; i++)
 	{
 		// Calculate tex coord to sample
 		vec2 uv = tex_coord + vec2(gauBlurA[i].x * inverse_width, gauBlurA[i].y * inverse_height);
@@ -74,10 +74,47 @@ void main() {
 	vec4 sample_tex = texture(tex, uv) * gauBlurB[i].w; 
 	start_colour += sample_tex;
   }
-
+  */
 
   // Ensure alpha is 1.0
-  colour = start_colour;
+  
+  if (start_colour.x>0.85 && start_colour.y>0.85 && start_colour.z>0.85){
+
+
+			for (int i = 0; i < 7; i++)
+			{
+				// Calculate tex coord to sample
+				vec2 uv = tex_coord + vec2(gauBlurA[i].x * inverse_width, gauBlurA[i].y * inverse_height);
+				// Sample the texture and scale appropriately
+				// - scale factor stored in w component
+			vec4 sample_tex = texture(tex, uv) * gauBlurA[i].w; 
+			start_colour += sample_tex;
+			}
+
+
+			for (int i = 0; i < 7; i++)
+		  {
+			// Calculate tex coord to sample
+			vec2 uv = tex_coord + vec2(gauBlurB[i].y *inverse_height , gauBlurB[i].x * inverse_width );
+			// Sample the texture and scale appropriately
+			// - scale factor stored in w component
+			vec4 sample_tex = texture(tex, uv) * gauBlurB[i].w; 
+			start_colour += sample_tex;
+		  }
+
+	
+	//colour = start_colour;
+	}
+
+
+	colour = texture(tex, tex_coord);
+	
+
+	float brightness = (colour.x*0.2126)+(colour.y*0.7152)+(colour.z*0.0722);
+  
+  darkcolour = colour*brightness;
+  darkcolour += start_colour;
+  colour += darkcolour*0.8;
   colour.a = 1.0;
 
 

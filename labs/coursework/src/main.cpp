@@ -45,6 +45,9 @@ frame_buffer temp_frame;
 unsigned int current_frame = 0;
 geometry screen_quad;
 
+
+effect bloom_eff;
+
 // We could just use the Camera's projection, 
 // but that has a narrower FoV than the cone of the spot light, so we would get clipping.
 // so we have yo create a new Proj Mat with a field of view of 90.
@@ -110,6 +113,7 @@ bool load_content() {
 
 	meshes["falcon"] = mesh(geometry("models/starwars-millennium-falcon.obj")); 
 	meshes["god"] = mesh(geometry("models/hand.OBJ"));
+	meshes["death"] = mesh(geometry("models/Death_Star.obj"));
 
 	//Transform Objects
 	  //meshes["plane"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
@@ -151,6 +155,9 @@ bool load_content() {
 	meshes["god"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	meshes["spaceinvader"].get_transform().scale = vec3(0.001f, 0.001f, 0.001f);
 
+	//meshes["death"].get_transform().scale = vec3(0.00001f, 0.00001f, 0.00001f);
+	meshes["death"].get_transform().translate(vec3(150.0f, 0.0f, 0.0f));
+
 	material mat;
 	// *********************************
 	// Set materials
@@ -175,8 +182,11 @@ bool load_content() {
 	mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	meshes["moon"].set_material(mat);
 
+
+
 	//Brighter planets
-	mat.set_emissive(vec4(0.01f, 0.01f, 0.01f, 1.0f));
+	//mat.set_emissive(vec4(0.01f, 0.01f, 0.01f, 1.0f));
+	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	meshes["plane"].set_material(mat);
 	meshes["mercury"].set_material(mat);
 	meshes["venus"].set_material(mat);
@@ -202,6 +212,12 @@ bool load_content() {
 	//mat.set_emissive(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	meshes["god"].set_material(mat);
 
+
+
+	mat.set_diffuse(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	mat.set_emissive(vec4(0.01f, 0.01f, 0.01f, 1.0f));
+	meshes["death"].set_material(mat);
+
 	// Load texture
 	tex["plane"] = texture("textures/check_1.png");
 	tex["box"] = texture("textures/water.jpg");
@@ -220,6 +236,7 @@ bool load_content() {
 
 	tex["falcon"] = texture("textures/falcon.jpg");
 	tex["god"] = texture("textures/water.jpg");
+	tex["death"] = texture("textures/deathstar.jpg");
 
 
 	// Load brick_normalmap.jpg texture
@@ -355,12 +372,19 @@ bool load_content() {
 	//Load in tex_effect shaders
 	tex_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
 	tex_eff.add_shader("shaders/simple_texture.frag", GL_FRAGMENT_SHADER);
+	//Build effect
+	tex_eff.build();
+
+	//Load in tex_effect shaders
+	bloom_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
+	bloom_eff.add_shader("shaders/bloom.frag", GL_FRAGMENT_SHADER);
+	//Build effect
+	tex_eff.build();
 	 
 	//Load in Skybox shaders
 	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
 	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
-	//Build effect
-	tex_eff.build();
+	
 
 	// Build effect
 	sky_eff.build();
@@ -403,6 +427,12 @@ bool update(float delta_time) {
 	static float range = 100.0f;
 	// The target object
 	static mesh &target_mesh = meshes["falcon"];
+
+	if (glfwGetKey(renderer::get_window(), 'C')) {
+		cam.set_position(meshes["death"].get_transform().position);
+	}
+
+
 
 	//Set the camera boolean
 	if (glfwGetKey(renderer::get_window(), 'I')) {

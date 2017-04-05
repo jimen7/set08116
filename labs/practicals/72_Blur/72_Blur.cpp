@@ -86,7 +86,7 @@ bool load_content() {
   meshes["cylinder"].get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
   meshes["cylinder"].get_material().set_diffuse(vec4(1.0f, 0.0f, 1.0f, 1.0f));
   meshes["cylinder"].get_material().set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-  meshes["cylinder"].get_material().set_shininess(25.0f);
+  meshes["cylinder"].get_material().set_shininess(25.0f);  
   // Cyan sphere
   meshes["sphere"].get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
   meshes["sphere"].get_material().set_diffuse(vec4(0.0f, 1.0f, 1.0f, 1.0f));
@@ -135,7 +135,7 @@ bool update(float delta_time) {
     cam.set_position(vec3(-50, 10, -50));
   }
   if (glfwGetKey(renderer::get_window(), '4')) {
-    cam.set_position(vec3(50, 10, -50));
+    cam.set_position(vec3(50, 10, -50)); 
   }
 
   // Rotate the sphere
@@ -152,7 +152,7 @@ bool update(float delta_time) {
 bool render() {
   // *********************************
   // Set render target to frame buffer
-	renderer::set_render_target(frame);
+	renderer::set_render_target(frame);         
   // Clear frame
 	renderer::clear();
   // *********************************
@@ -163,7 +163,7 @@ bool render() {
     // Bind effect
     renderer::bind(eff);
     // Create MVP matrix
-    auto M = m.get_transform().get_transform_matrix();
+    auto M = m.get_transform().get_transform_matrix(); 
     auto V = cam.get_view();
     auto P = cam.get_projection();
     auto MVP = P * V * M;
@@ -180,13 +180,13 @@ bool render() {
     // Bind material
     renderer::bind(m.get_material(), "mat");
     // Bind light
-    renderer::bind(light, "light");
+    renderer::bind(light, "light"); 
     // Bind texture
     renderer::bind(tex, 0);
     // Set tex uniform
     glUniform1i(eff.get_uniform_location("tex"), 0);
     // Set eye position
-    glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
+    glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));     
 
     // Render mesh
     renderer::render(m);  
@@ -198,7 +198,7 @@ bool render() {
   // Bind Tex effect
   renderer::bind(tex_eff);
   // MVP is now the identity matrix
-  auto MVP = mat4(1.0f);
+  auto MVP = mat4(1.0f); 
   // Set MVP matrix uniform
   glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Bind texture from frame buffer
@@ -210,7 +210,7 @@ bool render() {
   // Set inverse height Uniform
   glUniform1f(tex_eff.get_uniform_location("inverse_height"), 1.0 / renderer::get_screen_height()); 
   // Render the screen quad
-  renderer::render(screen_quad); 
+  renderer::render(screen_quad);     
   // *********************************
 
   return true;
@@ -218,7 +218,7 @@ bool render() {
 
 void main() {
   // Create application
-  app application("72_Blur");
+  app application("72_Blur"); 
   // Set load content, update and render methods
   application.set_load_content(load_content);
   application.set_update(update);

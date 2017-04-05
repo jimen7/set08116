@@ -57,11 +57,16 @@ void main() {
   // Calculate primary colour component
   vec4 primary = mat.emissive + ambient + diffuse;
 
-  float brightness = dot(sample_texture.xyz, vec3(0.2126, 0.7152, 0.0722))
+  float brightness = dot(sample_texture.xyz, vec3(0.2126, 0.7152, 0.0722));
+primary.a = 1.0f;
+
+
+
+  colour = (primary * sample_texture+specular);//+vec4(0.0, 0.0, 1.0, 0.0);
 	
   // Calculate final colour - remember alpha
-  primary.a = 1.0f;
+  
   if(brightness > 1.0)
-	 colour = primary * sample_texture+specular;
+	 colour = vec4(0.0,0.0,1.0,0.0); //primary * sample_texture+specular;
   // *********************************
 }

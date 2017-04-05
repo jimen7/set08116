@@ -3,7 +3,7 @@
 
 using namespace std;
 using namespace graphics_framework;
-using namespace glm;
+using namespace glm; 
 
 map<string, mesh> meshes;
 effect eff;
@@ -13,11 +13,11 @@ directional_light light;
 
 bool load_content() {
   // Create plane mesh
-  meshes["plane"] = mesh(geometry_builder::create_plane());
+  meshes["plane"] = mesh(geometry_builder::create_plane()); 
 
   // Create scene
-  meshes["box"] = mesh(geometry_builder::create_box());
-  meshes["tetra"] = mesh(geometry_builder::create_tetrahedron());
+  meshes["box"] = mesh(geometry_builder::create_box()); 
+  meshes["tetra"] = mesh(geometry_builder::create_tetrahedron()); 
   meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
   meshes["disk"] = mesh(geometry_builder::create_disk(20));
   meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20));
