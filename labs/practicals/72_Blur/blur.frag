@@ -33,13 +33,13 @@ layout(location = 0) in vec2 tex_coord;
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
-layout(location = 1) out vec4 darkcolour;
+//layout(location = 1) out vec4 darkcolour;
 
 void main() {
   // *********************************
   // Start with colour as black
   vec4 start_colour = vec4(0.0, 0.0, 0.0, 1.0);
-
+  vec4 darkcolour = vec4(0.0, 0.0, 0.0, 1.0);
 
   //Change this loop depending what filter you want to use: sample, edge, or sharp
   /*

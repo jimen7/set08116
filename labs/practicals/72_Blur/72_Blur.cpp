@@ -11,7 +11,7 @@ effect tex_eff;
 texture tex;
 target_camera cam;
 directional_light light;
-frame_buffer frame;
+frame_buffer frame;     
 geometry screen_quad;
 
 bool load_content() {

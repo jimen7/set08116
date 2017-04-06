@@ -63,10 +63,11 @@ primary.a = 1.0f;
 
 
   colour = (primary * sample_texture+specular);//+vec4(0.0, 0.0, 1.0, 0.0);
+  colour.a=1.0f;
 	
   // Calculate final colour - remember alpha
   
-  if(brightness > 1.0)
-	 colour = vec4(0.0,0.0,1.0,0.0); //primary * sample_texture+specular;
+ // if(brightness > 1.0)
+	// colour = vec4(0.0,0.0,1.0,0.0); //primary * sample_texture+specular;
   // *********************************
 }
