@@ -17,7 +17,7 @@ geometry screen_quad;
 bool load_content() {
   // *********************************
   // Create frame buffer - use screen width and height
-	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());  
   // Create screen quad
 	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f),
 		vec3(1.0f, 1.0f, 0.0f) };
@@ -104,7 +104,7 @@ bool load_content() {
   // Set lighting values
   light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
   light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-  light.set_direction(vec3(1.0f, 1.0f, -1.0f));
+  light.set_direction(vec3(1.0f, 1.0f, -1.0f)); 
 
   // Load in shaders
   eff.add_shader("48_Phong_Shading/phong.vert", GL_VERTEX_SHADER);
@@ -122,11 +122,11 @@ bool load_content() {
   cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
   return true;
-}
+}        
 
 bool update(float delta_time) {
   if (glfwGetKey(renderer::get_window(), '1')) {
-    cam.set_position(vec3(50, 10, 50));
+    cam.set_position(vec3(50, 10, 50));  
   }
   if (glfwGetKey(renderer::get_window(), '2')) {
     cam.set_position(vec3(-50, 10, 50));
@@ -202,7 +202,7 @@ bool render() {
   // Set MVP matrix uniform
   glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Bind texture from frame buffer
-  renderer::bind(frame.get_frame(), 0);
+  renderer::bind(frame.get_frame(), 0);               
   // Set the tex uniform
   glUniform1i(tex_eff.get_uniform_location("tex"), 0);
   // Set inverse width Uniform

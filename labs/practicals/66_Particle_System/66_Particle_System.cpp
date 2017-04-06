@@ -31,7 +31,7 @@ effect particle_eff;
 // Current buffer to perform the physics update to
 unsigned int front_buf = 0;
 // Buffer to render to
-unsigned int back_buf = 1;
+unsigned int back_buf = 1; 
 
 target_camera cam;
 
@@ -47,8 +47,8 @@ bool load_content() {
 
   // Initilise particles
   for (unsigned int i = 0; i < MAX_PARTICLES; ++i) {
-    particles[i].position = vec3(((10.0f * dist(rand)) - 5.0f), 0.0f, 0.0f); 
-    particles[i].velocity = vec3(0.0f, 0.5f + dist(rand), 0.0f);
+    particles[i].position = vec3(((10.0f * dist(rand)) - 5.0f), 0.0f, 0.0f);
+    particles[i].velocity = vec3(0.5f + dist(rand), 0.5f + dist(rand), 0.0f);
   }
 
   // Build effects

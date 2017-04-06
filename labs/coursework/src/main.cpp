@@ -9,11 +9,11 @@
 #include <graphics_framework.h>
 
 using namespace std;
+using namespace std::chrono;
 using namespace graphics_framework;
 using namespace glm;
 
 
-bool motionblurbool = false;
 map<string, mesh> meshes;
 map<string, mesh> normal_meshes;
 mesh skybox;
@@ -37,6 +37,12 @@ float velocity;
 float moon_velocity;
 bool planetmovement = true;
 
+// We could just use the Camera's projection, 
+// but that has a narrower FoV than the cone of the spot light, so we would get clipping.
+// so we have yo create a new Proj Mat with a field of view of 90.
+mat4 LightProjectionMat;
+//bool plane = false;
+
 
 effect tex_eff;
 effect motion_blur;
@@ -44,15 +50,31 @@ frame_buffer frames[2];
 frame_buffer temp_frame;
 unsigned int current_frame = 0;
 geometry screen_quad;
+bool motionblurbool = false;
 
-
+//Bloom
 effect bloom_eff;
+bool bloombool = false;
 
-// We could just use the Camera's projection, 
-// but that has a narrower FoV than the cone of the spot light, so we would get clipping.
-// so we have yo create a new Proj Mat with a field of view of 90.
-mat4 LightProjectionMat;
-//bool plane = false;
+
+//Explosion 
+float explode_factor = 0.0f;
+bool explodebool = false;
+
+
+
+//Particles
+const unsigned int MAX_PARTICLES = 2 << 11;
+
+vec4 positions[MAX_PARTICLES];
+vec4 velocitys[MAX_PARTICLES];
+
+
+GLuint G_Position_buffer, G_Velocity_buffer;
+
+
+effect particle_eff;
+GLuint vao;
 
 
 bool initialise() {
@@ -65,7 +87,10 @@ bool initialise() {
 	return true;
 }
 
-bool load_content() {
+
+
+
+void setPostProcessVariables(){
 	// *********************************
 	// Create 2 frame buffers - use screen width and height
 	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
@@ -80,21 +105,9 @@ bool load_content() {
 	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
 	screen_quad.set_type(GL_TRIANGLE_STRIP);
 	// *********************************
+}
 
-	//Light Projection Matrix
-	LightProjectionMat = perspective<float>(half_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.f);
-	// Create shadow map- use screen size
-	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
-	// Create box geometry for skybox 
-	skybox = mesh(geometry_builder::create_box());
-	// Scale box by 100
-	skybox.get_transform().scale *= 100.0f;
-	// Load the cubemap
-	array<string, 6> filenames = { "textures/Stars/purplenebula_ft.png", "textures/Stars/purplenebula_bk.png", "textures/Stars/purplenebula_up.png",
-		"textures/Stars/purplenebula_dn.png", "textures/Stars/purplenebula_rt.png", "textures/Stars/purplenebula_lf.png" };
-	// Create cube_map
-	cube_map = cubemap(filenames);
-
+void CreateAndScaleMeshes() {
 	// Create Sphere
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 	meshes["box"] = mesh(geometry_builder::create_box());
@@ -111,12 +124,12 @@ bool load_content() {
 
 	meshes["spaceinvader"] = mesh(geometry("models/Space_Invader.obj"));
 
-	meshes["falcon"] = mesh(geometry("models/starwars-millennium-falcon.obj")); 
+	meshes["falcon"] = mesh(geometry("models/starwars-millennium-falcon.obj"));
 	meshes["god"] = mesh(geometry("models/hand.OBJ"));
 	meshes["death"] = mesh(geometry("models/Death_Star.obj"));
 
 	//Transform Objects
-	  //meshes["plane"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
+	//meshes["plane"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["plane"].get_transform().translate(vec3(0.0f, -60.0f, 0.0f));
 	meshes["plane"].get_transform().scale = vec3(0.01f, 0.01f, 0.01f);
 	meshes["box"].get_transform().translate(vec3(0.0f, -59.0f, 0.0f));
@@ -158,6 +171,21 @@ bool load_content() {
 	//meshes["death"].get_transform().scale = vec3(0.00001f, 0.00001f, 0.00001f);
 	meshes["death"].get_transform().translate(vec3(150.0f, 0.0f, 0.0f));
 
+}
+
+void CreateSkybox() {
+	// Create box geometry for skybox 
+	skybox = mesh(geometry_builder::create_box());
+	// Scale box by 100
+	skybox.get_transform().scale *= 100.0f;
+	// Load the cubemap
+	array<string, 6> filenames = { "textures/Stars/purplenebula_ft.png", "textures/Stars/purplenebula_bk.png", "textures/Stars/purplenebula_up.png",
+		"textures/Stars/purplenebula_dn.png", "textures/Stars/purplenebula_rt.png", "textures/Stars/purplenebula_lf.png" };
+	// Create cube_map
+	cube_map = cubemap(filenames);
+}
+
+void SetMaterials() {
 	material mat;
 	// *********************************
 	// Set materials
@@ -171,7 +199,11 @@ bool load_content() {
 	//Sun to yellow
 	mat.set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	mat.set_diffuse(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	mat.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	meshes["sun"].set_material(mat);
+
+	mat.set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
 	//Earth to azure
 	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	mat.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -218,6 +250,9 @@ bool load_content() {
 	mat.set_emissive(vec4(0.01f, 0.01f, 0.01f, 1.0f));
 	meshes["death"].set_material(mat);
 
+}
+
+void loadTextures() {
 	// Load texture
 	tex["plane"] = texture("textures/check_1.png");
 	tex["box"] = texture("textures/water.jpg");
@@ -241,8 +276,9 @@ bool load_content() {
 
 	// Load brick_normalmap.jpg texture
 	tex_normal_maps["earth"] = texture("textures/4096_normal.jpg");
+}
 
-
+void setLightProperties() {
 	//Spotlight ranges are all set to 0 because they are going to be used for part 2
 
 
@@ -342,24 +378,30 @@ bool load_content() {
 	//Point light - Set range to 1000
 	light.set_range(1000.0f);
 
+}
+
+void loadShaders() {
 	// Load in shaders 
-	
+
 	/*
 	std::vector<std::string> vf = std::vector<std::string>{ "shaders/simple_shader.frag",
-		"shaders/part_normal_map.frag",
-		"shaders/part_spot.frag",
-		"shaders/part_shadow.frag" };
+	"shaders/part_normal_map.frag",
+	"shaders/part_spot.frag",
+	"shaders/part_shadow.frag" };
 	eff.add_shader(vf, GL_FRAGMENT_SHADER);
 	*/
+
 	eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);
 	eff.add_shader("shaders/simple_shader.frag", GL_FRAGMENT_SHADER);
+	//eff.add_shader("shaders/explode.geom", GL_GEOMETRY_SHADER);
 	eff.add_shader("shaders/part_normal_map.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_spot.frag", GL_FRAGMENT_SHADER);
 	eff.add_shader("shaders/part_shadow.frag", GL_FRAGMENT_SHADER);
-	
+
+
 	//vector<string> frag_shaders{ "shaders/simple_shader.frag", "shaders/part_normal_map.frag",
-	  //   "shaders/part_spot.frag" };
-	//eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER); 
+	//   "shaders/part_spot.frag" };
+	//eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);  
 	// Build effect
 	eff.build();
 
@@ -368,6 +410,10 @@ bool load_content() {
 	motion_blur.add_shader("shaders/motion_blur.frag", GL_FRAGMENT_SHADER);
 	//Build effect
 	motion_blur.build();
+
+	//Load in Particles effect
+	particle_eff.add_shader("shaders/particle.comp", GL_COMPUTE_SHADER);
+	particle_eff.build();
 
 	//Load in tex_effect shaders
 	tex_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
@@ -379,12 +425,12 @@ bool load_content() {
 	bloom_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
 	bloom_eff.add_shader("shaders/bloom.frag", GL_FRAGMENT_SHADER);
 	//Build effect
-	tex_eff.build();
-	 
+	bloom_eff.build();
+
 	//Load in Skybox shaders
 	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
 	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
-	
+
 
 	// Build effect
 	sky_eff.build();
@@ -402,8 +448,9 @@ bool load_content() {
 	shadow_eff.add_shader("shaders/part_shadow.frag", GL_FRAGMENT_SHADER);
 	// Build effect
 	shadow_eff.build();
+}
 
-
+void setCamProperties() {
 	// Set free camera properties
 	cam.set_position(vec3(0.0f, 10.0f, 0.0f));
 	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
@@ -413,9 +460,84 @@ bool load_content() {
 	chcam.set_springiness(0.5f);
 	chcam.move(meshes["falcon"].get_transform().position, eulerAngles(meshes["falcon"].get_transform().orientation));
 	chcam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
+}
+
+void setParticles() {
+	default_random_engine rand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
+	uniform_real_distribution<float> dist;
+
+	// Initilise particles
+	for (unsigned int i = 0; i < MAX_PARTICLES; ++i) {
+		float randD = dist(rand);
+		positions[i] = vec4(randD*14.0f + meshes["death"].get_transform().position.x, 30.0f , cos(randD)*15.0f*randD + meshes["death"].get_transform().position.z, 0.0f);                     //vec3(((10.0f * dist(rand)) - 5.0f), 0.0f, 0.0f);
+		positions[i].w = positions[i].x;
+		velocitys[i] = vec4(0.5f + dist(rand), 0.5f + dist(rand), 0.5f + dist(rand), 0.0f);
+	}
+
+	// a useless vao, but we need it bound or we get errors.
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	// *********************************
+	//Generate Position Data buffer
+	glGenBuffers(1, &G_Position_buffer);
+	// Bind as GL_SHADER_STORAGE_BUFFER
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Position_buffer);
+	// Send Data to GPU, use GL_DYNAMIC_DRAW
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, positions, GL_DYNAMIC_DRAW);
+
+	// Generate Velocity Data buffer
+	glGenBuffers(1, &G_Velocity_buffer);
+	// Bind as GL_SHADER_STORAGE_BUFFER
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Velocity_buffer);
+	// Send Data to GPU, use GL_DYNAMIC_DRAW
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, velocitys, GL_DYNAMIC_DRAW);
+	// *********************************
+	//Unbind
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	renderer::setClearColour(0, 0, 0);
+
+}
+
+
+
+
+
+bool load_content() {
+
+	//Light Projection Matrix
+	LightProjectionMat = perspective<float>(half_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.f);
+
+	// Create shadow map- use screen size
+	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
+
+
+	setPostProcessVariables();
+
+	CreateSkybox();
+
+	CreateAndScaleMeshes();
+
+	SetMaterials();
+
+	loadTextures();
+
+	setLightProperties();
+
+	loadShaders();
+
+	setParticles();
+
+	setCamProperties();
+	
 
 	return true;
 }
+
+
+
+
+
 
 
 bool update(float delta_time) {
@@ -429,8 +551,20 @@ bool update(float delta_time) {
 	static mesh &target_mesh = meshes["falcon"];
 
 	if (glfwGetKey(renderer::get_window(), 'C')) {
-		cam.set_position(meshes["death"].get_transform().position);
+		explodebool = true; 
 	}
+
+	if (explodebool) {
+		if (explode_factor<50) {
+			explode_factor += 0.1f;
+		}
+		else {
+			explode_factor = 0.0f;
+			explodebool = false;
+		}
+	}
+
+
 
 
 
@@ -449,6 +583,14 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'V')) {
 		motionblurbool = false;
 	}
+
+	if (glfwGetKey(renderer::get_window(), 'M')) {
+		bloombool = true;
+	}
+	if (glfwGetKey(renderer::get_window(), 'N')) {
+		bloombool = false;
+	}
+
 
 
 
@@ -558,7 +700,7 @@ bool update(float delta_time) {
 	meshes["god"].get_transform().position = vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 5.0f, normal_meshes["earth"].get_transform().position.z);
 	//Hand of god
 	if (glfwGetKey(renderer::get_window(), 'T')) {
-		meshes["god"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
+		meshes["god"].get_transform().scale = vec3(10.0f, 10.0f, 10.0f); 
 	}
 
 	if (glfwGetKey(renderer::get_window(), 'Y')) {
@@ -680,13 +822,27 @@ bool update(float delta_time) {
 	shadow.light_position = spots[8].get_position();
 	// do the same for light_dir property
 	shadow.light_dir = spots[8].get_direction();
+
 	// *********************************
+
+	//Set the particle dimensions and movement
+	if (delta_time > 10.0f) {
+		delta_time = 10.0f;
+	}
+	renderer::bind(particle_eff);
+	glUniform1f(particle_eff.get_uniform_location("delta_time"), delta_time);
+	glUniform3fv(particle_eff.get_uniform_location("max_dims"), 1, &(vec3(50.0f, 5.0f, 5.0f))[0]);
+
+	//glUniform3fv(particle_eff.get_uniform_location("max_dims"), 1, value_ptr(vec3(7.0f, 8.0f, 5.0f)));
 
 
 	return true;
 
 
 }
+
+
+
 
 void renderSkybox() {
 	// Disable depth test,depth mask,face culling
@@ -768,7 +924,7 @@ void renderMeshes() {
 				value_ptr(MVP));                 // Pointer to matrix data
 
 												 // *********************************
-												 // Set M matrix uniform
+			// Set M matrix uniform
 			glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
 			// Set N matrix uniform - remember - 3x3 matrix
 			glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(m.get_transform().get_normal_matrix()));
@@ -797,6 +953,73 @@ void renderMeshes() {
 			// Render mesh
 			renderer::render(m);
 			glEnable(GL_CULL_FACE);
+		}
+		else if (e.first == "death") {
+			auto m = e.second;
+			// Bind effect
+			renderer::bind(eff);
+			// Create MVP matrix
+			mat4 MVP;
+			auto M = m.get_transform().get_transform_matrix();
+			if (cambool) {
+				auto V = cam.get_view();
+				auto P = cam.get_projection();
+				MVP = P * V * M;
+			}
+			else {
+				auto V = chcam.get_view();
+				auto P = chcam.get_projection();
+				MVP = P * V * M;
+			}
+			// Set lightMVP uniform, using:
+			//Model matrix from m
+			auto LM = m.get_transform().get_transform_matrix();
+			// viewmatrix from the shadow map
+			auto LV = shadow.get_view();
+			//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f)); //Attempt for planet shadows
+			// Multiply together with LightProjectionMat
+			auto lightMVP = LightProjectionMat*LV*LM;
+			// Set uniform
+			glUniformMatrix4fv(eff.get_uniform_location("lightMVP"), 1, GL_FALSE, value_ptr(lightMVP));
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform
+				1,                               // Number of values - 1 mat4
+				GL_FALSE,                        // Transpose the matrix?
+				value_ptr(MVP));                 // Pointer to matrix data
+
+												 // *********************************
+												 // Set M matrix uniform
+			glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+			// Set N matrix uniform - remember - 3x3 matrix
+			glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(m.get_transform().get_normal_matrix()));
+			// Bind material
+			renderer::bind(m.get_material(), "mat");
+			// Bind light
+			renderer::bind(light, "point");
+			// Bind spot lights
+			renderer::bind(spots, "spots");
+			// Bind texture
+			//renderer::bind(tex[e.first], 0);
+			//cout << "++++++++HERE: " << e.first << endl;
+			renderer::bind(tex[e.first], 0);
+			// Set tex uniform
+			glUniform1i(eff.get_uniform_location("tex"), 0);
+			// Set eye position - Get this from active camera
+			if (cambool) {
+				glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
+			}
+			else {
+				glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(chcam.get_position()));
+			}
+			// Bind shadow map texture - use texture unit 1
+			renderer::bind(shadow.buffer->get_depth(), 1);
+			// Set the shadow_map uniform
+			glUniform1i(eff.get_uniform_location("shadow_map"), 1);
+			// Set explode factor uniform
+			glUniform1f(eff.get_uniform_location("explode_factor"), explode_factor);
+			// Render mesh
+			renderer::render(m);
+			// *********************************
 		}
 		else {
 			auto m = e.second;
@@ -1092,12 +1315,123 @@ void renderShadows() {
 	renderer::bind(eff);
 }
 
+void renderMotionblur() {
+	if (motionblurbool) {
+
+		// !!!!!!!!!!!!!!! SECOND PASS !!!!!!!!!!!!!!!!
+		// *********************************
+		// Set render target to current frame
+		renderer::set_render_target(frames[current_frame]);
+		// Clear frame
+		renderer::clear();
+		// Bind motion blur effect
+		renderer::bind(motion_blur);
+		// MVP is now the identity matrix
+		auto MVP = mat4(1.0f);
+		// Set MVP matrix uniform
+		glUniformMatrix4fv(motion_blur.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+		// Bind tempframe to TU 0.
+		renderer::bind(temp_frame.get_frame(), 0);
+		// Bind frames[(current_frame + 1) % 2] to TU 1.
+		renderer::bind(frames[(current_frame + 1) % 2].get_frame(), 1);
+		// Set tex uniforms
+		glUniform1i(motion_blur.get_uniform_location("tex"), 0);
+		glUniform1i(motion_blur.get_uniform_location("previous_frame"), 1);
+		// Set blend factor (0.9f)
+		glUniform1f(motion_blur.get_uniform_location("blend_factor"), 0.9f);
+		// Render screen quad
+		renderer::render(screen_quad);
+
+		// !!!!!!!!!!!!!!! SCREEN PASS !!!!!!!!!!!!!!!!
+
+		// Set render target back to the screen
+		renderer::set_render_target();
+		renderer::bind(tex_eff);
+		// Set MVP matrix uniform
+		glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+		// Bind texture from frame buffer
+		renderer::bind(frames[current_frame].get_frame(), 0);
+		// Set the uniform
+		glUniform1i(tex_eff.get_uniform_location("tex"), 0);
+		// Render the screen quad
+		renderer::render(screen_quad);
+		// *********************************
+
+	}
+}
+
+void renderBloom() {
+		if (bloombool) {
+			// Set render target back to the screen
+			renderer::set_render_target();
+			// Bind Tex effect
+			renderer::bind(bloom_eff);
+			// MVP is now the identity matrix
+			auto MVP = mat4(1.0f);
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(bloom_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+			// Bind texture from frame buffer
+			renderer::bind(temp_frame.get_frame(), 0);
+			// Set the tex uniform
+			glUniform1i(bloom_eff.get_uniform_location("tex"), 0);
+			// Set inverse width Uniform
+			glUniform1f(bloom_eff.get_uniform_location("inverse_width"), 1.0 / renderer::get_screen_width());
+			// Set inverse height Uniform
+			glUniform1f(bloom_eff.get_uniform_location("inverse_height"), 1.0 / renderer::get_screen_height());
+			// Render the screen quad
+			renderer::render(screen_quad);
+		}
+}
+
+void renderParticles1() {
+	// Bind Compute Shader
+	renderer::bind(particle_eff);
+	// Bind data as SSBO
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, G_Position_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, G_Velocity_buffer);
+	// Dispatch
+	glDispatchCompute(MAX_PARTICLES / 128, 1, 1);
+	// Sync, wait for completion
+	glMemoryBarrier(GL_ALL_BARRIER_BITS);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	mat4 MVP;
+	mat4 M(1.0f);
+	if (cambool) {
+		auto V = cam.get_view();
+		auto P = cam.get_projection();
+		MVP = P * V * M;
+	}
+	else {
+		auto V = chcam.get_view();
+		auto P = chcam.get_projection();
+		MVP = P * V * M;
+	}
+
+	glUniform4fv(eff.get_uniform_location("colour"), 1, value_ptr(vec4(1.0f)));
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+
+	// Bind position buffer as GL_ARRAY_BUFFER
+	glBindBuffer(GL_ARRAY_BUFFER, G_Position_buffer);
+	// Setup vertex format
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
+	// Render
+	glDrawArrays(GL_POINTS, 0, MAX_PARTICLES);
+	// Tidy up
+	glDisableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glUseProgram(0);
+}
+
 bool render() {
 
+	// Set clear colour to reddish 
+	renderer::setClearColour(1.0f, 0.1f, 0.1f);
+
 	if (motionblurbool) {
-		if (cambool) {
-		}
-		else {
+		
 			// !!!!!!!!!!!!!!! FIRST PASS !!!!!!!!!!!!!!!!
 			// *********************************
 			// Set render target to temp frame
@@ -1106,7 +1440,14 @@ bool render() {
 			renderer::clear();
 			// *********************************
 		}
-	}
+
+		if (bloombool) {
+			// Set render target to temp frame
+			renderer::set_render_target(temp_frame);
+			// Clear frame
+			renderer::clear();
+		
+	} 
 
 	renderspaceinvaderTransformation(); //The Transformation object is inside the sun, so user has to navigate there if he wishes to see it
 
@@ -1119,60 +1460,13 @@ bool render() {
 	renderSun();
 
 	renderShadows();
+
+	renderParticles1();
 	
-
-	if (motionblurbool) {
-		if (cambool) {
-		}
-		else {
-			// !!!!!!!!!!!!!!! SECOND PASS !!!!!!!!!!!!!!!!
-			// *********************************
-			// Set render target to current frame
-			renderer::set_render_target(frames[current_frame]);
-			// Clear frame
-			renderer::clear();
-			// Bind motion blur effect
-			renderer::bind(motion_blur);
-			// MVP is now the identity matrix
-			auto MVP = mat4(1.0f);
-			// Set MVP matrix uniform
-			glUniformMatrix4fv(motion_blur.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-			// Bind tempframe to TU 0.
-			renderer::bind(temp_frame.get_frame(), 0);
-			// Bind frames[(current_frame + 1) % 2] to TU 1.
-			renderer::bind(frames[(current_frame + 1) % 2].get_frame(), 1);
-			// Set tex uniforms
-			glUniform1i(motion_blur.get_uniform_location("tex"), 0);
-			glUniform1i(motion_blur.get_uniform_location("previous_frame"), 1);
-			// Set blend factor (0.9f)
-			glUniform1f(motion_blur.get_uniform_location("blend_factor"), 0.9f);
-			// Render screen quad
-			renderer::render(screen_quad);
-
-			// !!!!!!!!!!!!!!! SCREEN PASS !!!!!!!!!!!!!!!!
-
-			// Set render target back to the screen
-			renderer::set_render_target();
-			renderer::bind(tex_eff);
-			// Set MVP matrix uniform
-			glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-			// Bind texture from frame buffer
-			renderer::bind(frames[current_frame].get_frame(), 0);
-			// Set the uniform
-			glUniform1i(tex_eff.get_uniform_location("tex"), 0);
-			// Render the screen quad
-			renderer::render(screen_quad);
-			// *********************************
-		}
-
-		
-
-
-	}
-
-
-
-
+	renderMotionblur();
+	
+	renderBloom();
+	
 
 	return true;
 }

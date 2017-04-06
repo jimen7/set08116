@@ -23,7 +23,7 @@ void main() {
   vec3 new_pos = position[0] + velocity[0] * delta_time;
   // *********************************
   // Ensure particle does not go out of bounds - if y > 5 set y to 0
-  if (new_pos.y>10)
+  if (new_pos.y>8)
 	new_pos.y=0;
 
 
