@@ -428,7 +428,7 @@ void loadShaders() {
 	explode_eff.build();
 
 	//Lens flare shaders
-	lens_eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);  
+	lens_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);   
 	lens_eff.add_shader("shaders/lensflare.frag", GL_FRAGMENT_SHADER);
 	lens_eff.build();
 
@@ -1545,16 +1545,17 @@ void renderLensflare() {
 	
 	if (lensbool) {
 
-		renderer::set_render_target(temp_frame);
+		//renderer::set_render_target(temp_frame);
 		// Clear frame
 		//renderer::clear(); 
 
 		// Set render target back to the screen
-		//renderer::set_render_target();
+		renderer::set_render_target();
 		// Bind Tex effect
 		renderer::bind(lens_eff);
 		// MVP 
-		mat4 MVP;
+		auto MVP = mat4(1.0f);    
+	/*	mat4 MVP;
 		mat4 M(1.0f);
 		if (cambool) {
 			auto V = cam.get_view();
@@ -1565,7 +1566,7 @@ void renderLensflare() {
 			auto V = chcam.get_view();
 			auto P = chcam.get_projection();
 			MVP = P * V * M;
-		}
+		}*/
 		// Set MVP matrix uniform 
 		glUniformMatrix4fv(lens_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 		// Bind texture 
@@ -1615,7 +1616,7 @@ bool render() {
 			renderer::clear();
 
 		}
-		renderer::set_render_target();
+		//renderer::set_render_target();
 	renderspaceinvaderTransformation(); //The Transformation object is inside the sun, so user has to navigate there if he wishes to see it
 
 	renderSkybox();
