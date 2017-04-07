@@ -65,7 +65,7 @@ effect explode_eff;
 
 
 //Particles
-const unsigned int MAX_PARTICLES = 10000;
+const unsigned int MAX_PARTICLES = 30000;
 
 vec4 positions[MAX_PARTICLES];
 vec4 velocitys[MAX_PARTICLES];
@@ -476,47 +476,62 @@ void setCamProperties() {
 	chcam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
 }
 
-void setParticles() {
-	default_random_engine rand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
-	uniform_real_distribution<float> dist(-1.0,1.0);
 
-	// Initilise particles
-	for (unsigned int i = 0; i < MAX_PARTICLES; ++i) {
-		float randD = dist(rand);
-		//positions[i] = vec4(randD*14.0f + meshes["death"].get_transform().position.x, 30.0f , cos(randD)*15.0f*randD + meshes["death"].get_transform().position.z, 0.0f); 
-
-		positions[i] = vec4( meshes["death"].get_transform().position.x, meshes["death"].get_transform().position.y, meshes["death"].get_transform().position.z, 0.0f);
-		positions[i].w = positions[i].x;
-
-		velocitys[i] = normalize(vec4(0.4f + (2.0f * dist(rand)), 0.5f + (3.0f * dist(rand)), 0.2f + (6.0f * dist(rand)), 0.0f));
-		//velocitys[i] = vec4(0.5f + dist(rand), 0.5f + dist(rand), 0.5f + dist(rand), 0.0f);
-	}
-
-	// a useless vao, but we need it bound or we get errors.
-	glGenVertexArrays(1, &vao);
-
-	glBindVertexArray(vao);
-	// *********************************
-	//Generate Position Data buffer
-	glGenBuffers(1, &G_Position_buffer);
-	// Bind as GL_SHADER_STORAGE_BUFFER
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Position_buffer);
-	// Send Data to GPU, use GL_DYNAMIC_DRAW
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, positions, GL_DYNAMIC_DRAW);
-
-	// Generate Velocity Data buffer
-	glGenBuffers(1, &G_Velocity_buffer);
-	// Bind as GL_SHADER_STORAGE_BUFFER
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Velocity_buffer);
-	// Send Data to GPU, use GL_DYNAMIC_DRAW
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, velocitys, GL_DYNAMIC_DRAW);
-	// *********************************
-	//Unbind
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	renderer::setClearColour(0, 0, 0);
-
+//Function that creates a float between two values
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
 }
+
+ 
+void setParticles() {
+		default_random_engine rand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
+		uniform_real_distribution<float> dist(-1.0, 1.0);
+
+		// Initilise particles
+		for (unsigned int i = 0; i < MAX_PARTICLES; ++i) {
+			float randD = dist(rand);
+
+			//positions[i] = vec4(randD*14.0f + meshes["death"].get_transform().position.x, 30.0f , cos(randD)*15.0f*randD + meshes["death"].get_transform().position.z, 0.0f); 
+			vec4 velocities = vec4(vec4(7 + (10.0f * dist(rand)), 7 + (10.0f * dist(rand)), 0.1f + (7 * dist(rand)), 0.0f));
+			velocities = 4.0f * velocities;
+			positions[i] = vec4(meshes["death"].get_transform().position.x, meshes["death"].get_transform().position.y +3, meshes["death"].get_transform().position.z, 0.0f);
+			positions[i].w = positions[i].x; 
+
+			velocitys[i] = RandomFloat(10.0f,20.0f)*normalize(vec4( (10.0f * dist(rand)),  (10.0f * dist(rand)),  (10.0f * dist(rand)), 0.0f));
+			//velocitys[i] = vec4(0.5f + dist(rand), 0.5f + dist(rand), 0.5f + dist(rand), 0.0f);
+		}
+
+		// a useless vao, but we need it bound or we get errors.
+		glGenVertexArrays(1, &vao);
+
+		glBindVertexArray(vao);
+		// *********************************
+		//Generate Position Data buffer
+		glGenBuffers(1, &G_Position_buffer);
+		// Bind as GL_SHADER_STORAGE_BUFFER
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Position_buffer);
+		// Send Data to GPU, use GL_DYNAMIC_DRAW
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, positions, GL_DYNAMIC_DRAW);
+
+		// Generate Velocity Data buffer
+		glGenBuffers(1, &G_Velocity_buffer);
+		// Bind as GL_SHADER_STORAGE_BUFFER
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, G_Velocity_buffer);
+		// Send Data to GPU, use GL_DYNAMIC_DRAW
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec4) * MAX_PARTICLES, velocitys, GL_DYNAMIC_DRAW);
+		// *********************************
+		//Unbind
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+		renderer::setClearColour(0, 0, 0);
+
+		vec3 deathstarposition = meshes["death"].get_transform().position;
+		glUniform3fv(particle_eff.get_uniform_location("DSP"), 1, value_ptr(deathstarposition));
+
+	}
 
 
 
@@ -574,7 +589,7 @@ bool update(float delta_time) {
 	}
 
 	if (explodebool) {
-		if (explode_factor<50) {
+		if (explode_factor<100) {
 			explode_factor += 0.1f;
 		}
 		else {
@@ -851,12 +866,12 @@ bool update(float delta_time) {
 	if (CHECK_GL_ERROR) {
 		std::cout << 1;
 	}
-	vec3 deathstarposition = meshes["death"].get_transform().position;
+
 	renderer::bind(particle_eff);
 	glUniform1f(particle_eff.get_uniform_location("delta_time"), delta_time);
 	glUniform3fv(particle_eff.get_uniform_location("max_dims"), 1, value_ptr(vec3(50.0f, 50.0f, 50.0f)));
 
-	glUniform3fv(particle_eff.get_uniform_location("DSP"), 1, value_ptr(deathstarposition));
+	
 	
 
 	//glUniform3fv(particle_eff.get_uniform_location("max_dims"), 1, value_ptr(vec3(7.0f, 8.0f, 5.0f)));
@@ -1519,7 +1534,9 @@ bool render() {
 
 	renderShadows();
 
-	renderParticles1();
+	if (explodebool) {
+		renderParticles1();
+	}
 	
 	renderMotionblur();
 	
