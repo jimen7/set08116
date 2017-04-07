@@ -63,6 +63,13 @@ bool explodebool = false;
 effect explode_eff;
 
 
+//Lens flare
+effect lens_eff;
+frame_buffer lens_buff;
+vec2 screen_res;
+bool lensbool=false;
+
+
 
 //Particles
 const unsigned int MAX_PARTICLES = 30000;
@@ -79,6 +86,7 @@ GLuint vao;
 
 
 effect particle_render;
+
 
 
 bool initialise() {
@@ -101,6 +109,8 @@ void setPostProcessVariables(){
 	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	// Create a temp framebuffer
 	temp_frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+
+
 	// Create screen quad
 	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f),
 		vec3(1.0f, 1.0f, 0.0f) };
@@ -273,6 +283,9 @@ void loadTextures() {
 	tex["spaceinvader"] = texture("textures/spaceinvader.jpg");
 
 
+	tex["lens"] = texture("textures/lens.png");
+
+
 	tex["falcon"] = texture("textures/falcon.jpg");
 	tex["god"] = texture("textures/water.jpg");
 	tex["death"] = texture("textures/deathstar.jpg");
@@ -414,6 +427,13 @@ void loadShaders() {
 	explode_eff.add_shader("shaders/explode.frag", GL_FRAGMENT_SHADER);
 	explode_eff.build();
 
+	//Lens flare shaders
+	lens_eff.add_shader("shaders/simple_shader.vert", GL_VERTEX_SHADER);  
+	lens_eff.add_shader("shaders/lensflare.frag", GL_FRAGMENT_SHADER);
+	lens_eff.build();
+
+
+	 
 	//Load in motion blur shaders
 	motion_blur.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
 	motion_blur.add_shader("shaders/motion_blur.frag", GL_FRAGMENT_SHADER);
@@ -462,6 +482,10 @@ void loadShaders() {
 	shadow_eff.add_shader("shaders/part_shadow.frag", GL_FRAGMENT_SHADER);
 	// Build effect
 	shadow_eff.build();
+
+	if (CHECK_GL_ERROR) {
+		std::cout << 1;
+	}
 }
 
 void setCamProperties() {
@@ -476,7 +500,6 @@ void setCamProperties() {
 	chcam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
 }
 
-
 //Function that creates a float between two values
 float RandomFloat(float a, float b) {
 	float random = ((float)rand()) / (float)RAND_MAX;
@@ -485,7 +508,6 @@ float RandomFloat(float a, float b) {
 	return a + r;
 }
 
- 
 void setParticles() {
 		default_random_engine rand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
 		uniform_real_distribution<float> dist(-1.0, 1.0);
@@ -506,7 +528,7 @@ void setParticles() {
 
 		// a useless vao, but we need it bound or we get errors.
 		glGenVertexArrays(1, &vao);
-
+		
 		glBindVertexArray(vao);
 		// *********************************
 		//Generate Position Data buffer
@@ -528,10 +550,17 @@ void setParticles() {
 
 		renderer::setClearColour(0, 0, 0);
 
+		renderer::bind(particle_eff);
+
 		vec3 deathstarposition = meshes["death"].get_transform().position;
 		glUniform3fv(particle_eff.get_uniform_location("DSP"), 1, value_ptr(deathstarposition));
 
 	}
+
+//void lenssetup() {
+	//Creates the lens buffer
+	//lens_buff = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+//}
 
 
 
@@ -544,6 +573,8 @@ bool load_content() {
 
 	// Create shadow map- use screen size
 	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
+
+	screen_res = vec2(renderer::get_screen_width(), renderer::get_screen_height());
 
 
 	setPostProcessVariables();
@@ -563,6 +594,10 @@ bool load_content() {
 	setParticles();
 
 	setCamProperties();
+
+	if (CHECK_GL_ERROR) {
+		std::cout << 1;
+	}
 	
 
 	return true;
@@ -576,6 +611,9 @@ bool load_content() {
 
 bool update(float delta_time) {
 
+	if (CHECK_GL_ERROR) {
+		std::cout << 1;
+	}
 	current_frame = (current_frame + 1) % 2;
 
 	//cout << 1 / delta_time << endl;  //Framerate
@@ -596,6 +634,13 @@ bool update(float delta_time) {
 			explode_factor = 0.0f;
 			explodebool = false;
 		}
+	}
+
+	if (glfwGetKey(renderer::get_window(), 'F')) {
+		lensbool = false;
+	}
+	if (glfwGetKey(renderer::get_window(), 'J') ) {
+		lensbool = true;
 	}
 
 
@@ -677,9 +722,7 @@ bool update(float delta_time) {
 
 
 	// Press s to save
-	if (glfwGetKey(renderer::get_window(), 'J') == GLFW_PRESS) {
-		shadow.buffer->save("test.png");
-	}
+
 
 
 	// O and P to change point light range
@@ -863,9 +906,7 @@ bool update(float delta_time) {
 	if (delta_time > 10.0f) {
 		delta_time = 10.0f;
 	}
-	if (CHECK_GL_ERROR) {
-		std::cout << 1;
-	}
+	
 
 	renderer::bind(particle_eff);
 	glUniform1f(particle_eff.get_uniform_location("delta_time"), delta_time);
@@ -1427,6 +1468,8 @@ void renderBloom() {
 }
 
 void renderParticles1() {
+
+	renderer::set_render_target();
 	// Bind Compute Shader
 	renderer::bind(particle_eff);
 	// Bind data as SSBO
@@ -1454,7 +1497,7 @@ void renderParticles1() {
 	// Bind render effect
 	renderer::bind(particle_render);
 
-	glUniform4fv(particle_render.get_uniform_location("colour"), 1, value_ptr(vec4(1.0f, 0.5f, 0.05f, 1.0f)));
+	glUniform4fv(particle_render.get_uniform_location("colour"), 1, value_ptr(vec4(0.886f, 0.345f, 0.133f, 1.0f)));
 	// Set MVP matrix uniform
 	glUniformMatrix4fv(particle_render.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 
@@ -1494,14 +1537,58 @@ void renderExplosion() {
 		// Set explode factor uniform
 		glUniform1f(explode_eff.get_uniform_location("explode_factor"), explode_factor);
 		glDisable(GL_CULL_FACE);
-		renderer::render(meshes["death"]);
+		renderer::render(meshes["death"]); 
 	}
+}
+
+void renderLensflare() {
+	
+	if (lensbool) {
+
+		renderer::set_render_target(temp_frame);
+		// Clear frame
+		//renderer::clear(); 
+
+		// Set render target back to the screen
+		//renderer::set_render_target();
+		// Bind Tex effect
+		renderer::bind(lens_eff);
+		// MVP 
+		mat4 MVP;
+		mat4 M(1.0f);
+		if (cambool) {
+			auto V = cam.get_view();
+			auto P = cam.get_projection();
+			MVP = P * V * M;
+		}
+		else {
+			auto V = chcam.get_view();
+			auto P = chcam.get_projection();
+			MVP = P * V * M;
+		}
+		// Set MVP matrix uniform 
+		glUniformMatrix4fv(lens_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+		// Bind texture 
+		//renderer::bind(tex["lens"], 0);
+		renderer::bind(temp_frame.get_frame(), 0);
+		// Set the tex uniform
+		glUniform1i(lens_eff.get_uniform_location("tex"), 0);
+		//Uniform screen
+		glUniform2fv(lens_eff.get_uniform_location("resolution"), 1, value_ptr(screen_res));
+		//Render screen quad
+		renderer::render(screen_quad);
+		//renderer::set_render_target();
+	}
+	
+
 }
 
 bool render() {
 
 	// Set clear colour to reddish 
 	renderer::setClearColour(1.0f, 0.1f, 0.1f);
+
+	//renderer::bind(lens_eff);
 
 	if (motionblurbool) {
 		
@@ -1521,7 +1608,14 @@ bool render() {
 			renderer::clear();
 		
 	} 
+		if (lensbool) {
+			// Set render target to temp frame
+			renderer::set_render_target(temp_frame);
+			// Clear frame
+			renderer::clear();
 
+		}
+		renderer::set_render_target();
 	renderspaceinvaderTransformation(); //The Transformation object is inside the sun, so user has to navigate there if he wishes to see it
 
 	renderSkybox();
@@ -1532,18 +1626,23 @@ bool render() {
 
 	renderSun();
 
-	renderShadows();
+	//renderShadows();
 
 	if (explodebool) {
 		renderParticles1();
 	}
 	
 	renderMotionblur();
-	
+
+	renderLensflare();
 	renderBloom();
 
-	renderExplosion();
+	//renderExplosion();
+;
 	
+//	if (CHECK_GL_ERROR) {
+//		std::cout << 1;
+//	}
 
 	return true;
 }
