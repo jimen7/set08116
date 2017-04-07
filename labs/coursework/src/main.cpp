@@ -60,11 +60,12 @@ bool bloombool = false;
 //Explosion 
 float explode_factor = 0.0f;
 bool explodebool = false;
+effect explode_eff;
 
 
 
 //Particles
-const unsigned int MAX_PARTICLES = 2 << 11;
+const unsigned int MAX_PARTICLES = 10000;
 
 vec4 positions[MAX_PARTICLES];
 vec4 velocitys[MAX_PARTICLES];
@@ -75,6 +76,9 @@ GLuint G_Position_buffer, G_Velocity_buffer;
 
 effect particle_eff;
 GLuint vao;
+
+
+effect particle_render;
 
 
 bool initialise() {
@@ -405,6 +409,11 @@ void loadShaders() {
 	// Build effect
 	eff.build();
 
+	explode_eff.add_shader("shaders/explode.vert", GL_VERTEX_SHADER);
+	explode_eff.add_shader("shaders/explode.geom", GL_GEOMETRY_SHADER);
+	explode_eff.add_shader("shaders/explode.frag", GL_FRAGMENT_SHADER);
+	explode_eff.build();
+
 	//Load in motion blur shaders
 	motion_blur.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
 	motion_blur.add_shader("shaders/motion_blur.frag", GL_FRAGMENT_SHADER);
@@ -414,6 +423,11 @@ void loadShaders() {
 	//Load in Particles effect
 	particle_eff.add_shader("shaders/particle.comp", GL_COMPUTE_SHADER);
 	particle_eff.build();
+
+	//Load in Render Particle effect
+	particle_render.add_shader("shaders/basic_colour.vert", GL_VERTEX_SHADER);
+	particle_render.add_shader("shaders/basic_colour.frag", GL_FRAGMENT_SHADER);
+	particle_render.build();
 
 	//Load in tex_effect shaders
 	tex_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
@@ -464,18 +478,23 @@ void setCamProperties() {
 
 void setParticles() {
 	default_random_engine rand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
-	uniform_real_distribution<float> dist;
+	uniform_real_distribution<float> dist(-1.0,1.0);
 
 	// Initilise particles
 	for (unsigned int i = 0; i < MAX_PARTICLES; ++i) {
 		float randD = dist(rand);
-		positions[i] = vec4(randD*14.0f + meshes["death"].get_transform().position.x, 30.0f , cos(randD)*15.0f*randD + meshes["death"].get_transform().position.z, 0.0f);                     //vec3(((10.0f * dist(rand)) - 5.0f), 0.0f, 0.0f);
+		//positions[i] = vec4(randD*14.0f + meshes["death"].get_transform().position.x, 30.0f , cos(randD)*15.0f*randD + meshes["death"].get_transform().position.z, 0.0f); 
+
+		positions[i] = vec4( meshes["death"].get_transform().position.x, meshes["death"].get_transform().position.y, meshes["death"].get_transform().position.z, 0.0f);
 		positions[i].w = positions[i].x;
-		velocitys[i] = vec4(0.5f + dist(rand), 0.5f + dist(rand), 0.5f + dist(rand), 0.0f);
+
+		velocitys[i] = normalize(vec4(0.4f + (2.0f * dist(rand)), 0.5f + (3.0f * dist(rand)), 0.2f + (6.0f * dist(rand)), 0.0f));
+		//velocitys[i] = vec4(0.5f + dist(rand), 0.5f + dist(rand), 0.5f + dist(rand), 0.0f);
 	}
 
 	// a useless vao, but we need it bound or we get errors.
 	glGenVertexArrays(1, &vao);
+
 	glBindVertexArray(vao);
 	// *********************************
 	//Generate Position Data buffer
@@ -829,9 +848,16 @@ bool update(float delta_time) {
 	if (delta_time > 10.0f) {
 		delta_time = 10.0f;
 	}
+	if (CHECK_GL_ERROR) {
+		std::cout << 1;
+	}
+	vec3 deathstarposition = meshes["death"].get_transform().position;
 	renderer::bind(particle_eff);
 	glUniform1f(particle_eff.get_uniform_location("delta_time"), delta_time);
-	glUniform3fv(particle_eff.get_uniform_location("max_dims"), 1, &(vec3(50.0f, 5.0f, 5.0f))[0]);
+	glUniform3fv(particle_eff.get_uniform_location("max_dims"), 1, value_ptr(vec3(50.0f, 50.0f, 50.0f)));
+
+	glUniform3fv(particle_eff.get_uniform_location("DSP"), 1, value_ptr(deathstarposition));
+	
 
 	//glUniform3fv(particle_eff.get_uniform_location("max_dims"), 1, value_ptr(vec3(7.0f, 8.0f, 5.0f)));
 
@@ -955,71 +981,73 @@ void renderMeshes() {
 			glEnable(GL_CULL_FACE);
 		}
 		else if (e.first == "death") {
-			auto m = e.second;
-			// Bind effect
-			renderer::bind(eff);
-			// Create MVP matrix
-			mat4 MVP;
-			auto M = m.get_transform().get_transform_matrix();
-			if (cambool) {
-				auto V = cam.get_view();
-				auto P = cam.get_projection();
-				MVP = P * V * M;
-			}
-			else {
-				auto V = chcam.get_view();
-				auto P = chcam.get_projection();
-				MVP = P * V * M;
-			}
-			// Set lightMVP uniform, using:
-			//Model matrix from m
-			auto LM = m.get_transform().get_transform_matrix();
-			// viewmatrix from the shadow map
-			auto LV = shadow.get_view();
-			//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f)); //Attempt for planet shadows
-			// Multiply together with LightProjectionMat
-			auto lightMVP = LightProjectionMat*LV*LM;
-			// Set uniform
-			glUniformMatrix4fv(eff.get_uniform_location("lightMVP"), 1, GL_FALSE, value_ptr(lightMVP));
-			// Set MVP matrix uniform
-			glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform
-				1,                               // Number of values - 1 mat4
-				GL_FALSE,                        // Transpose the matrix?
-				value_ptr(MVP));                 // Pointer to matrix data
+			if (explodebool == false) {
+				auto m = e.second;
+				// Bind effect
+				renderer::bind(eff);
+				// Create MVP matrix
+				mat4 MVP;
+				auto M = m.get_transform().get_transform_matrix();
+				if (cambool) {
+					auto V = cam.get_view();
+					auto P = cam.get_projection();
+					MVP = P * V * M;
+				}
+				else {
+					auto V = chcam.get_view();
+					auto P = chcam.get_projection();
+					MVP = P * V * M;
+				}
+				// Set lightMVP uniform, using:
+				//Model matrix from m
+				auto LM = m.get_transform().get_transform_matrix();
+				// viewmatrix from the shadow map
+				auto LV = shadow.get_view();
+				//auto LV = glm::lookAt(shadow.light_position, meshes["sun"].get_transform().position, glm::vec3(0.0f, 0.0f, 1.0f)); //Attempt for planet shadows
+				// Multiply together with LightProjectionMat
+				auto lightMVP = LightProjectionMat*LV*LM;
+				// Set uniform
+				glUniformMatrix4fv(eff.get_uniform_location("lightMVP"), 1, GL_FALSE, value_ptr(lightMVP));
+				// Set MVP matrix uniform
+				glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform
+					1,                               // Number of values - 1 mat4
+					GL_FALSE,                        // Transpose the matrix?
+					value_ptr(MVP));                 // Pointer to matrix data
 
-												 // *********************************
-												 // Set M matrix uniform
-			glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
-			// Set N matrix uniform - remember - 3x3 matrix
-			glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(m.get_transform().get_normal_matrix()));
-			// Bind material
-			renderer::bind(m.get_material(), "mat");
-			// Bind light
-			renderer::bind(light, "point");
-			// Bind spot lights
-			renderer::bind(spots, "spots");
-			// Bind texture
-			//renderer::bind(tex[e.first], 0);
-			//cout << "++++++++HERE: " << e.first << endl;
-			renderer::bind(tex[e.first], 0);
-			// Set tex uniform
-			glUniform1i(eff.get_uniform_location("tex"), 0);
-			// Set eye position - Get this from active camera
-			if (cambool) {
-				glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
+													 // *********************************
+													 // Set M matrix uniform
+				glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+				// Set N matrix uniform - remember - 3x3 matrix
+				glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(m.get_transform().get_normal_matrix()));
+				// Bind material
+				renderer::bind(m.get_material(), "mat");
+				// Bind light
+				renderer::bind(light, "point");
+				// Bind spot lights
+				renderer::bind(spots, "spots");
+				// Bind texture
+				//renderer::bind(tex[e.first], 0);
+				//cout << "++++++++HERE: " << e.first << endl;
+				renderer::bind(tex[e.first], 0);
+				// Set tex uniform
+				glUniform1i(eff.get_uniform_location("tex"), 0);
+				// Set eye position - Get this from active camera
+				if (cambool) {
+					glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
+				}
+				else {
+					glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(chcam.get_position()));
+				}
+				// Bind shadow map texture - use texture unit 1
+				renderer::bind(shadow.buffer->get_depth(), 1);
+				// Set the shadow_map uniform
+				glUniform1i(eff.get_uniform_location("shadow_map"), 1);
+				// Set explode factor uniform
+				//glUniform1f(eff.get_uniform_location("explode_factor"), explode_factor);
+				// Render mesh
+				renderer::render(m);
+				// *********************************
 			}
-			else {
-				glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(chcam.get_position()));
-			}
-			// Bind shadow map texture - use texture unit 1
-			renderer::bind(shadow.buffer->get_depth(), 1);
-			// Set the shadow_map uniform
-			glUniform1i(eff.get_uniform_location("shadow_map"), 1);
-			// Set explode factor uniform
-			glUniform1f(eff.get_uniform_location("explode_factor"), explode_factor);
-			// Render mesh
-			renderer::render(m);
-			// *********************************
 		}
 		else {
 			auto m = e.second;
@@ -1090,7 +1118,7 @@ void renderMeshes() {
 
 
 }
-
+//glUniform3fv(particle_eff.get_uniform_location("max_dims"), 1, &(vec3(50.0f, 5.0f, 5.0f))[0]);
 
 void renderNormalMeshes() {
 
@@ -1408,9 +1436,12 @@ void renderParticles1() {
 		MVP = P * V * M;
 	}
 
-	glUniform4fv(eff.get_uniform_location("colour"), 1, value_ptr(vec4(1.0f)));
+	// Bind render effect
+	renderer::bind(particle_render);
+
+	glUniform4fv(particle_render.get_uniform_location("colour"), 1, value_ptr(vec4(1.0f, 0.5f, 0.05f, 1.0f)));
 	// Set MVP matrix uniform
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	glUniformMatrix4fv(particle_render.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 
 	// Bind position buffer as GL_ARRAY_BUFFER
 	glBindBuffer(GL_ARRAY_BUFFER, G_Position_buffer);
@@ -1423,6 +1454,33 @@ void renderParticles1() {
 	glDisableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glUseProgram(0);
+}
+
+void renderExplosion() {
+	if (explodebool) {
+		renderer::bind(eff);
+		// Create MVP matrix
+		mat4 MVP;
+		auto M = meshes["death"].get_transform().get_transform_matrix();
+		if (cambool) {
+			auto V = cam.get_view();
+			auto P = cam.get_projection();
+			MVP = P * V * M;
+		}
+		else {
+			auto V = chcam.get_view();
+			auto P = chcam.get_projection();
+			MVP = P * V * M;
+		}
+		renderer::bind(explode_eff);
+		// Set MVP matrix uniform
+		glUniformMatrix4fv(explode_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+		// *********************************
+		// Set explode factor uniform
+		glUniform1f(explode_eff.get_uniform_location("explode_factor"), explode_factor);
+		glDisable(GL_CULL_FACE);
+		renderer::render(meshes["death"]);
+	}
 }
 
 bool render() {
@@ -1466,6 +1524,8 @@ bool render() {
 	renderMotionblur();
 	
 	renderBloom();
+
+	renderExplosion();
 	
 
 	return true;
