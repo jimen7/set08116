@@ -36,6 +36,7 @@ vec2 texcoord = -tex_coord + vec2(1.0);
       }
  
       out_colour = result;
+	  out_colour.a = 1.0f;
    
 
   // *********************************

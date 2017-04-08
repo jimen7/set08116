@@ -35,7 +35,7 @@ void main() {
   // *********************************
   // Output other values to fragment shader
   vertex_position = vec3(M * vec4(position, 1.0f));
-  transformed_normal = 1.0f * N * normal;
+  transformed_normal = -1.0f * N * normal;
   tex_coord_out1 = vec3(tex_coord_in,0.0f);
   // *********************************
     // Transform tangent

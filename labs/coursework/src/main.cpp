@@ -557,12 +557,6 @@ void setParticles() {
 
 	}
 
-//void lenssetup() {
-	//Creates the lens buffer
-	//lens_buff = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-//}
-
-
 
 
 
@@ -606,9 +600,6 @@ bool load_content() {
 
 
 
-
-
-
 bool update(float delta_time) {
 
 	if (CHECK_GL_ERROR) {
@@ -622,7 +613,7 @@ bool update(float delta_time) {
 	// The target object
 	static mesh &target_mesh = meshes["falcon"];
 
-	if (glfwGetKey(renderer::get_window(), 'C')) {
+	if (glfwGetKey(renderer::get_window(), 'J')) {
 		explodebool = true; 
 	}
 
@@ -639,7 +630,7 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'F')) {
 		lensbool = false;
 	}
-	if (glfwGetKey(renderer::get_window(), 'J') ) {
+	if (glfwGetKey(renderer::get_window(), 'C') ) {
 		lensbool = true;
 	}
 
@@ -1251,8 +1242,8 @@ void renderNormalMeshes() {
 
 void renderSun() {
 	
-	auto m = meshes["sun"];
-	// Bind effect
+	auto m = meshes["sun"];	// Bind effect
+
 	renderer::bind(sun_eff);
 	// Create MVP matrix
 	mat4 MVP;
@@ -1297,6 +1288,7 @@ void renderSun() {
 	// Render mesh
 	renderer::render(m);
 	// *********************************
+
 
 
 }
@@ -1468,50 +1460,52 @@ void renderBloom() {
 }
 
 void renderParticles1() {
+	if (explodebool) {
 
-	renderer::set_render_target();
-	// Bind Compute Shader
-	renderer::bind(particle_eff);
-	// Bind data as SSBO
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, G_Position_buffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, G_Velocity_buffer);
-	// Dispatch
-	glDispatchCompute(MAX_PARTICLES / 128, 1, 1);
-	// Sync, wait for completion
-	glMemoryBarrier(GL_ALL_BARRIER_BITS);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		renderer::set_render_target();
+		// Bind Compute Shader
+		renderer::bind(particle_eff);
+		// Bind data as SSBO
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, G_Position_buffer);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, G_Velocity_buffer);
+		// Dispatch
+		glDispatchCompute(MAX_PARTICLES / 128, 1, 1);
+		// Sync, wait for completion
+		glMemoryBarrier(GL_ALL_BARRIER_BITS);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	mat4 MVP;
-	mat4 M(1.0f);
-	if (cambool) {
-		auto V = cam.get_view();
-		auto P = cam.get_projection();
-		MVP = P * V * M;
+		mat4 MVP;
+		mat4 M(1.0f);
+		if (cambool) {
+			auto V = cam.get_view();
+			auto P = cam.get_projection();
+			MVP = P * V * M;
+		}
+		else {
+			auto V = chcam.get_view();
+			auto P = chcam.get_projection();
+			MVP = P * V * M;
+		}
+
+		// Bind render effect
+		renderer::bind(particle_render);
+
+		glUniform4fv(particle_render.get_uniform_location("colour"), 1, value_ptr(vec4(0.886f, 0.345f, 0.133f, 1.0f)));
+		// Set MVP matrix uniform
+		glUniformMatrix4fv(particle_render.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+
+		// Bind position buffer as GL_ARRAY_BUFFER
+		glBindBuffer(GL_ARRAY_BUFFER, G_Position_buffer);
+		// Setup vertex format
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
+		// Render
+		glDrawArrays(GL_POINTS, 0, MAX_PARTICLES);
+		// Tidy up
+		glDisableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glUseProgram(0);
 	}
-	else {
-		auto V = chcam.get_view();
-		auto P = chcam.get_projection();
-		MVP = P * V * M;
-	}
-
-	// Bind render effect
-	renderer::bind(particle_render);
-
-	glUniform4fv(particle_render.get_uniform_location("colour"), 1, value_ptr(vec4(0.886f, 0.345f, 0.133f, 1.0f)));
-	// Set MVP matrix uniform
-	glUniformMatrix4fv(particle_render.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-
-	// Bind position buffer as GL_ARRAY_BUFFER
-	glBindBuffer(GL_ARRAY_BUFFER, G_Position_buffer);
-	// Setup vertex format
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
-	// Render
-	glDrawArrays(GL_POINTS, 0, MAX_PARTICLES);
-	// Tidy up
-	glDisableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glUseProgram(0);
 }
 
 void renderExplosion() {
@@ -1541,7 +1535,7 @@ void renderExplosion() {
 	}
 }
 
-void renderLensflare() {
+void renderLensflare() { 
 	
 	if (lensbool) {
 
@@ -1570,8 +1564,8 @@ void renderLensflare() {
 		// Set MVP matrix uniform 
 		glUniformMatrix4fv(lens_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 		// Bind texture 
-		//renderer::bind(tex["lens"], 0);
-		renderer::bind(temp_frame.get_frame(), 0);
+		//renderer::bind(tex["lens"], 0);  
+		renderer::bind(temp_frame.get_frame(), 0);  
 		// Set the tex uniform
 		glUniform1i(lens_eff.get_uniform_location("tex"), 0);
 		//Uniform screen
@@ -1591,55 +1585,52 @@ bool render() {
 
 	//renderer::bind(lens_eff);
 
+	// !!!!!!!!!!!!!!! FIRST PASS !!!!!!!!!!!!!!!!
+
 	if (motionblurbool) {
-		
-			// !!!!!!!!!!!!!!! FIRST PASS !!!!!!!!!!!!!!!!
-			// *********************************
 			// Set render target to temp frame
 			renderer::set_render_target(temp_frame);
 			// Clear frame
 			renderer::clear();
-			// *********************************
 		}
 
-		if (bloombool) {
+	if (bloombool) {
 			// Set render target to temp frame
 			renderer::set_render_target(temp_frame);
 			// Clear frame
 			renderer::clear();
-		
 	} 
-		if (lensbool) {
+
+	if (lensbool) {
 			// Set render target to temp frame
 			renderer::set_render_target(temp_frame);
 			// Clear frame
 			renderer::clear();
+		}   
 
-		}
-		//renderer::set_render_target();
+	//renderer::set_render_target();
+	
 	renderspaceinvaderTransformation(); //The Transformation object is inside the sun, so user has to navigate there if he wishes to see it
 
-	renderSkybox();
+	renderSkybox();  
 
 	renderMeshes();
 
 	renderNormalMeshes();
 
-	renderSun();
+	renderParticles1();
 
-	//renderShadows();
+	renderSun(); 
 
-	if (explodebool) {
-		renderParticles1();
-	}
+	renderShadows();
 	
 	renderMotionblur();
 
 	renderLensflare();
+
 	renderBloom();
 
-	//renderExplosion();
-;
+	renderExplosion();
 	
 //	if (CHECK_GL_ERROR) {
 //		std::cout << 1;
