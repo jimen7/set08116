@@ -66,7 +66,7 @@ effect explode_eff;
 //Lens flare
 effect lens_eff;
 frame_buffer lens_buff;
-vec2 screen_res;
+vec2 screen_res;  
 bool lensbool=false;
 int lensghosts = 3;
 float lensdispertion = 0.3;
@@ -629,14 +629,11 @@ bool update(float delta_time) {
 		lensghosts = 3;
 	}
 	if (glfwGetKey(renderer::get_window(), '4')) {
-		lensghosts += 1;
-	}
-	if (glfwGetKey(renderer::get_window(), '5')) {
 		lensghosts -= 1;
 	}
-
-
-	// Press s to save
+	if (glfwGetKey(renderer::get_window(), '5')) {
+		lensghosts += 1;
+	}
 
 
 
@@ -878,6 +875,8 @@ void renderSkybox() {
 }
 
 
+
+
 void renderMeshes() {
 
 	// Render meshes
@@ -993,9 +992,9 @@ void renderMeshes() {
 				// Bind material
 				renderer::bind(m.get_material(), "mat");
 				// Bind light
-				renderer::bind(light, "point");
+				//renderer::bind(light, "point");	//Optimisation
 				// Bind spot lights
-				renderer::bind(spots, "spots");
+				//renderer::bind(spots, "spots");	//Optimisation
 				// Bind texture
 				//renderer::bind(tex[e.first], 0);
 				//cout << "++++++++HERE: " << e.first << endl;
@@ -1061,9 +1060,9 @@ void renderMeshes() {
 			// Bind material
 			renderer::bind(m.get_material(), "mat");
 			// Bind light
-			renderer::bind(light, "point");
+			//renderer::bind(light, "point");	//Optimisation
 			// Bind spot lights
-			renderer::bind(spots, "spots");
+			//renderer::bind(spots, "spots");  //Optimisation
 			// Bind texture
 			//renderer::bind(tex[e.first], 0);
 			//cout << "++++++++HERE: " << e.first << endl;
@@ -1134,9 +1133,9 @@ void renderNormalMeshes() {
 		// Bind material
 		renderer::bind(m.get_material(), "mat");
 		// Bind light
-		renderer::bind(light, "point");
+		//renderer::bind(light, "point");	//Optimisation
 		// Bind spot lights
-		renderer::bind(spots, "spots");
+		//renderer::bind(spots, "spots");	//Optimisation
 		// Bind texture
 		renderer::bind(tex[e.first], 0);
 		// Set tex uniform
@@ -1222,12 +1221,12 @@ void renderspaceinvaderTransformation() {    //Transform Hierarchy
 	// Bind effect
 	renderer::bind(eff);
 	// Get PV
-	mat4 PV = cam.get_projection() * cam.get_view();
+	mat4 PV;   // = cam.get_projection() * cam.get_view();  //Optimisation
 	if (cambool) {
-		PV = cam.get_projection() * cam.get_view();
+		PV = cam.get_projection() * cam.get_view();	//Optimisation
 	}
 	else {
-		PV = chcam.get_projection() * chcam.get_view();
+		PV = chcam.get_projection() * chcam.get_view();	//Optimisation
 	}
 	// Set the texture value for the shader here
 	glUniform1i(eff.get_uniform_location("tex"), 0);
@@ -1509,7 +1508,7 @@ void renderLensflare() {
 bool render() {
 
 	// Set clear colour to reddish 
-	renderer::setClearColour(1.0f, 0.1f, 0.1f);
+	renderer::setClearColour(0.1f, 0.1f, 1.0f);
 
 	//renderer::bind(lens_eff);
 

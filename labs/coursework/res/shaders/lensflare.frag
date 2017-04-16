@@ -5,9 +5,11 @@ uniform sampler2D tex;
 uniform vec2 resolution;
 
 uniform int ghosts;
+uniform bool weightbool;
+
 float dispertion = 0.3;
 
-uniform bool weightbool;
+
 
 // Incoming texture coordinate
 layout(location = 0) in vec2 tex_coord;
