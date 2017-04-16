@@ -4,8 +4,10 @@
 uniform sampler2D tex;
 uniform vec2 resolution;
 
-int ghosts = 3;
+uniform int ghosts;
 float dispertion = 0.3;
+
+uniform bool weightbool;
 
 // Incoming texture coordinate
 layout(location = 0) in vec2 tex_coord;
@@ -30,9 +32,20 @@ vec2 texcoord = -tex_coord + vec2(1.0);
    // sample ghosts:  
       vec4 result = vec4(0.0);
       for (int i = 0; i < ghosts; ++i) { 
-         vec2 offset = fract(tex_coord + ghostVec * float(i));
+         //vec2 offset = fract(tex_coord + ghostVec * float(i));
+		 vec2 offset = fract(tex_coord + ghostVec * float(i));
+
+		 if(weightbool){
+		 float weight = length(vec2(0.5) - offset) / length(vec2(0.5));
+         weight = pow(1.0 - weight, 10.0);
+
+		 result += texture(tex, offset)*weight;
+		 }
+		 else{
+		 result += texture(tex, offset);
+		 }
   
-         result += texture(tex, offset);
+         
       }
  
       out_colour = result;

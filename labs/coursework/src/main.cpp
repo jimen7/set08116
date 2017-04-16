@@ -31,7 +31,7 @@ map<string, texture> tex;
 map<string, texture> tex_normal_maps; 
 point_light light;
 cubemap cube_map;
-vector<spot_light> spots(9);
+vector<spot_light> spots(2); 
 shadow_map shadow;
 float velocity;
 float moon_velocity;
@@ -68,6 +68,9 @@ effect lens_eff;
 frame_buffer lens_buff;
 vec2 screen_res;
 bool lensbool=false;
+int lensghosts = 3;
+float lensdispertion = 0.3;
+bool lensweightbool = true;
 
 
 
@@ -299,93 +302,26 @@ void setLightProperties() {
 	//Spotlight ranges are all set to 0 because they are going to be used for part 2
 
 
-	// Spot 0, Position (x of planet, y of planet plus 30, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
+
+	// Spot 0, Position (x of earth, y of earth plus 30, z of earth)
+	// Green, Direction (x of earth, y of earth, z of earth) normalized
 	// 20 range,0.5 power
-	spots[0].set_position(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y + 30.0f, meshes["mercury"].get_transform().position.z));
+	spots[0].set_position(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 30.0f, normal_meshes["earth"].get_transform().position.z));
 	spots[0].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[0].set_direction(normalize(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z)));
+	spots[0].set_direction(normalize(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z)));
 	spots[0].set_range(0.0f);
 	spots[0].set_power(0.5f);
 
-	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
-	// 20 range,0.5 power
-	spots[1].set_position(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y + 30.0f, meshes["venus"].get_transform().position.z));
-	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[1].set_direction(normalize(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y, meshes["venus"].get_transform().position.z)));
-	spots[1].set_range(0.0f);
-	spots[1].set_power(0.5f);
-
-	// Spot 2, Position (x of planet, y of planet plus 30, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
-	// 20 range,0.5 power
-	spots[2].set_position(vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y + 30.0f, meshes["neptune"].get_transform().position.z));
-	spots[2].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[2].set_direction(normalize(vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y, meshes["neptune"].get_transform().position.z)));
-	spots[2].set_range(0.0f);
-	spots[2].set_power(0.5f);
-
-
-
-	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
-	// 20 range,0.5 power
-	spots[3].set_position(vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y + 30.0f, meshes["mars"].get_transform().position.z));
-	spots[3].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[3].set_direction(normalize(vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y, meshes["mars"].get_transform().position.z)));
-	spots[3].set_range(0.0f);
-	spots[3].set_power(0.5f);
-
-	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
-	// 20 range,0.5 power
-	spots[4].set_position(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y + 100.0f, meshes["jupiter"].get_transform().position.z));
-	spots[4].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[4].set_direction(normalize(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y, meshes["jupiter"].get_transform().position.z)));
-	spots[4].set_range(0.0f);
-	spots[4].set_power(0.9f);
-
-	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
-	// 20 range,0.5 power
-	spots[5].set_position(vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y + 30.0f, meshes["uranus"].get_transform().position.z));
-	spots[5].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[5].set_direction(normalize(vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y, meshes["uranus"].get_transform().position.z)));
-	spots[5].set_range(0.0f);
-	spots[5].set_power(0.5f);
-
-
-	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
-	// 20 range,0.5 power
-	spots[6].set_position(vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y + 30.0f, meshes["saturn"].get_transform().position.z));
-	spots[6].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[6].set_direction(normalize(vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y, meshes["saturn"].get_transform().position.z)));
-	spots[6].set_range(0.0f);
-	spots[6].set_power(0.5f);
-
-
-
-	// Spot 1, Position (x of planet, y of planet plus 30, z of planet)
-	// Green, Direction (x of planet, y of planet, z of planet) normalized
-	// 20 range,0.5 power
-	spots[7].set_position(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 30.0f, normal_meshes["earth"].get_transform().position.z));
-	spots[7].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[7].set_direction(normalize(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z)));
-	spots[7].set_range(0.0f);
-	spots[7].set_power(0.5f);
-
 	// Spot 8, Position (x of box plus 20, y of box plus 23, z of box)
 	// Green, Direction (x of box, y of box, z of box) normalized    
-	// 20 range,0.5 power
-	spots[8].set_position(vec3(20.0f, -36.0f, 0.0f));
+	// 500 range,0.5 power
+	spots[1].set_position(vec3(20.0f, -36.0f, 0.0f));
 
-	spots[8].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	//spots[8].set_direction(normalize(vec3(0, -59.0f, 0.0f) - vec3(20.0f, -36.0f, 0.0f)));
-	spots[8].set_direction(normalize(vec3(meshes["box"].get_transform().position.x, meshes["box"].get_transform().position.y, meshes["box"].get_transform().position.z)));
-	spots[8].set_range(500.0f);
-	spots[8].set_power(10.0f);
+	spots[1].set_direction(normalize(vec3(meshes["box"].get_transform().position.x, meshes["box"].get_transform().position.y, meshes["box"].get_transform().position.z)));
+	spots[1].set_range(500.0f);
+	spots[1].set_power(10.0f);
 
 
 	//Point light - Set lighting values, Position (-25, 10, -10)
@@ -568,7 +504,7 @@ bool load_content() {
 	// Create shadow map- use screen size
 	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 
-	screen_res = vec2(renderer::get_screen_width(), renderer::get_screen_height());
+	screen_res = vec2(renderer::get_screen_width(), renderer::get_screen_height());  
 
 
 	setPostProcessVariables();
@@ -666,49 +602,37 @@ bool update(float delta_time) {
 
 
 
-	//Set position of spotlights above the moving Planets
-	spots[0].set_position(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y + 30.0f, meshes["mercury"].get_transform().position.z));
-	spots[0].set_direction(normalize(vec3(meshes["mercury"].get_transform().position.x, meshes["mercury"].get_transform().position.y, meshes["mercury"].get_transform().position.z)));
-	spots[1].set_position(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y + 30.0f, meshes["venus"].get_transform().position.z));
-	spots[1].set_direction(normalize(vec3(meshes["venus"].get_transform().position.x, meshes["venus"].get_transform().position.y, meshes["venus"].get_transform().position.z)));
-	spots[2].set_position(vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y + 30.0f, meshes["neptune"].get_transform().position.z));
-	spots[2].set_direction(normalize(vec3(meshes["neptune"].get_transform().position.x, meshes["neptune"].get_transform().position.y, meshes["neptune"].get_transform().position.z)));
-	spots[3].set_position(vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y + 30.0f, meshes["mars"].get_transform().position.z));
-	spots[3].set_direction(normalize(vec3(meshes["mars"].get_transform().position.x, meshes["mars"].get_transform().position.y, meshes["mars"].get_transform().position.z)));
-	spots[4].set_position(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y + 30.0f, meshes["jupiter"].get_transform().position.z));
-	spots[4].set_direction(normalize(vec3(meshes["jupiter"].get_transform().position.x, meshes["jupiter"].get_transform().position.y, meshes["jupiter"].get_transform().position.z)));
-	spots[5].set_position(vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y + 30.0f, meshes["uranus"].get_transform().position.z));
-	spots[5].set_direction(normalize(vec3(meshes["uranus"].get_transform().position.x, meshes["uranus"].get_transform().position.y, meshes["uranus"].get_transform().position.z)));
-	spots[6].set_position(vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y + 30.0f, meshes["saturn"].get_transform().position.z));
-	spots[6].set_direction(normalize(vec3(meshes["saturn"].get_transform().position.x, meshes["saturn"].get_transform().position.y, meshes["saturn"].get_transform().position.z)));
-	spots[7].set_position(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y + 30.0f, normal_meshes["earth"].get_transform().position.z));
-	spots[7].set_direction(normalize(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z)));
+	//Set position of spotlight above the earth
+	spots[0].set_direction(normalize(vec3(normal_meshes["earth"].get_transform().position.x, normal_meshes["earth"].get_transform().position.y, normal_meshes["earth"].get_transform().position.z)));
 
 	//Turn on Spotlights
 	if (glfwGetKey(renderer::get_window(), 'X')) {
-		//spots[0].set_range(40.0f);
-		//spots[1].set_range(40.0f);
-		//spots[2].set_range(40.0f);
-		//spots[3].set_range(40.0f);
-		//spots[4].set_range(40.0f);
-		//spots[5].set_range(40.0f);
-		//spots[6].set_range(40.0f);
-		//spots[7].set_range(40.0f);
-		spots[8].set_range(1000.0f);
-		spots[8].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		spots[1].set_range(1000.0f);
+		spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 	//Turn off Spotlights
 	if (glfwGetKey(renderer::get_window(), 'Z')) {
-		spots[0].set_range(0.0f);
 		spots[1].set_range(0.0f);
-		spots[2].set_range(0.0f);
-		spots[3].set_range(0.0f);
-		spots[4].set_range(0.0f);
-		spots[5].set_range(0.0f);
-		spots[6].set_range(0.0f);
-		spots[7].set_range(0.0f);
-		spots[8].set_range(0.0f);
-		spots[8].set_light_colour(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		spots[1].set_light_colour(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	}
+
+
+	if (glfwGetKey(renderer::get_window(), '1')) {
+		lensweightbool = true;
+	}
+	if (glfwGetKey(renderer::get_window(), '2')) {
+		lensweightbool = false;
+	}
+
+	
+	if (glfwGetKey(renderer::get_window(), '3')) {
+		lensghosts = 3;
+	}
+	if (glfwGetKey(renderer::get_window(), '4')) {
+		lensghosts += 1;
+	}
+	if (glfwGetKey(renderer::get_window(), '5')) {
+		lensghosts -= 1;
 	}
 
 
@@ -887,9 +811,9 @@ bool update(float delta_time) {
 
 	// *********************************
 	// Update the shadow map light_position from the spot light
-	shadow.light_position = spots[8].get_position();
+	shadow.light_position = spots[1].get_position();
 	// do the same for light_dir property
-	shadow.light_dir = spots[8].get_direction();
+	shadow.light_dir = spots[1].get_direction();
 
 	// *********************************
 
@@ -912,7 +836,7 @@ bool update(float delta_time) {
 	return true;
 
 
-}
+} 
 
 
 
@@ -1553,7 +1477,7 @@ void renderLensflare() {
 		mat4 M(1.0f);
 		if (cambool) {
 			auto V = cam.get_view();
-			auto P = cam.get_projection();
+			auto P = cam.get_projection(); 
 			MVP = P * V * M;
 		}
 		else {
@@ -1570,6 +1494,10 @@ void renderLensflare() {
 		glUniform1i(lens_eff.get_uniform_location("tex"), 0);
 		//Uniform screen
 		glUniform2fv(lens_eff.get_uniform_location("resolution"), 1, value_ptr(screen_res));
+		//Uniform Lens Ghosts
+		glUniform1i(lens_eff.get_uniform_location("ghosts"), lensghosts); 
+		//Uniform lens Weight bool
+		glUniform1i(lens_eff.get_uniform_location("weightbool"), lensweightbool);
 		//Render screen quad
 		renderer::render(screen_quad);
 		//renderer::set_render_target();

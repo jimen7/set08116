@@ -39,7 +39,7 @@ float calculate_shadow(in sampler2D shadow_map, in vec4 light_space_pos5);
 // Point light for the scene
 uniform point_light point;
 // Spot lights being used in the scene
-uniform spot_light spots[9];
+uniform spot_light spots[2];
 // Material for the object
 uniform material mat;
 // Eye position
@@ -108,7 +108,7 @@ void main() {
   colour.a = 1.0f;
 
     // Sum spot lights
-  for (int i = 0; i < 9; ++i) {
+  for (int i = 0; i < 2; ++i) {
 	colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, sample_texture);
   }
 
