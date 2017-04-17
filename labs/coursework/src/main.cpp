@@ -76,18 +76,11 @@ bool lensweightbool = true;
 
 //Particles
 const unsigned int MAX_PARTICLES = 30000;
-
 vec4 positions[MAX_PARTICLES];
 vec4 velocitys[MAX_PARTICLES];
-
-
 GLuint G_Position_buffer, G_Velocity_buffer;
-
-
 effect particle_eff;
 GLuint vao;
-
-
 effect particle_render;
 
 
@@ -843,7 +836,7 @@ bool update(float delta_time) {
 
 
 
-
+ 
 void renderSkybox() {
 	// Disable depth test,depth mask,face culling
 	glDisable(GL_DEPTH_TEST);
@@ -1363,7 +1356,7 @@ void renderMotionblur() {
 		// *********************************
 
 	}
-}
+} 
 
 void renderBloom() {
 		if (bloombool) {
