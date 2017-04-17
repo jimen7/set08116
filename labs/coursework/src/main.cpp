@@ -272,7 +272,7 @@ void SetMaterials() {
 void loadTextures() {
 	// Load texture
 	tex["plane"] = texture("textures/check_1.png");
-	tex["box"] = texture("textures/water.jpg");
+	tex["box"] = texture("textures/gray.jpg");
 	tex["sun"] = texture("textures/sun.jpg");
 	tex["mercury"] = texture("textures/mercury.jpg");
 	tex["venus"] = texture("textures/venus.jpg");
@@ -290,7 +290,7 @@ void loadTextures() {
 
 
 	tex["falcon"] = texture("textures/falcon.jpg");
-	tex["god"] = texture("textures/water.jpg");
+	tex["god"] = texture("textures/gray.jpg");
 	tex["death"] = texture("textures/deathstar.jpg");
 
 
@@ -786,13 +786,19 @@ bool update(float delta_time) {
 			meshes["falcon"].get_transform().position.x += 25.0f * delta_time;
 		}
 
+		//chcam.move(meshes["falcon"].get_transform().position, eulerAngles(meshes["falcon"].get_transform().orientation));
+		
+		
+		//chcam.rotate(vec3(delta_y, delta_x, 0.0f));
+
 		chcam.move(meshes["falcon"].get_transform().position, eulerAngles(meshes["falcon"].get_transform().orientation));
+
+		
 		// Update the camera
 		chcam.update(delta_time);
 		// Update cursor pos
 		cursor_x = current_x;
 		cursor_y = current_y;
-
 	}
 	// Set skybox position to camera position (active camera in centre of skybox)
 	if (cambool) {
