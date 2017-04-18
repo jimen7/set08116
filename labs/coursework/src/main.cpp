@@ -438,7 +438,7 @@ float RandomFloat(float a, float b) {
 }
 
 void setParticles() {
-		default_random_engine rand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
+		default_random_engine rand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());  
 		uniform_real_distribution<float> dist(-1.0, 1.0);
 
 		// Initilise particles
@@ -536,7 +536,7 @@ bool update(float delta_time) {
 	}
 	current_frame = (current_frame + 1) % 2;
 
-	//cout << 1 / delta_time << endl;  //Framerate
+	cout << 1 / delta_time << endl;  //Framerate  
 
 	static float range = 100.0f;
 	// The target object

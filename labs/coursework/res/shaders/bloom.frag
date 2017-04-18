@@ -39,7 +39,8 @@ void main() {
   // *********************************
   // Start with colour as black
   vec4 start_colour = vec4(0.0, 0.0, 0.0, 1.0);
-  vec4 darkcolour = vec4(0.0, 0.0, 0.0, 1.0);
+ // vec4 darkcolour = vec4(0.0, 0.0, 0.0, 1.0);
+ vec4 darkcolour;
 
   //Change this loop depending what filter you want to use: sample, edge, or sharp
   /*
